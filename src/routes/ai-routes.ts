@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { AIService } from '../services/ai-service';
-import { aiModelService } from '../services/ai-model-service';
-import { aiPipelineService } from '../services/ai-pipeline-service';
-import { aiGovernanceService } from '../services/ai-governance-service';
-import { aiDeploymentService } from '../services/ai-deployment-service';
+import { AIService } from '../services/ai-service.js';
+import { aiModelService } from '../services/ai-model-service.js';
+import { aiPipelineService } from '../services/ai-pipeline-service.js';
+import { aiGovernanceService } from '../services/ai-governance-service.js';
+import { aiDeploymentService } from '../services/ai-deployment-service.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();

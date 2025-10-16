@@ -1,6 +1,6 @@
 import type { Router } from 'express';
-import { TenantRequest } from '../tenant';
-import { validateBody } from '../validate';
+import { TenantRequest } from '../tenant.js';
+import { validateBody } from '../validate.js';
 import { z } from 'zod';
 import nodemailer from 'nodemailer';
 import multer from 'multer';

@@ -1,8 +1,8 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import type { TenantRequest } from '../tenant';
-import { asyncHandler } from '../errors';
-import { creditNotesService } from '../services/credit-notes.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import type { TenantRequest } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
+import { creditNotesService } from '../services/credit-notes.service.js';
 
 const router = express.Router();
 

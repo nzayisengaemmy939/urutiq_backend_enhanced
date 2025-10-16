@@ -1,9 +1,9 @@
 import { Router, Response } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { requireRoles } from './auth'; // Fixed: use auth.ts instead of middleware/auth.ts
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { requireRoles } from './auth.js'; // Fixed: use auth.ts instead of middleware/auth.ts
 import { z } from 'zod';
-import { validateRequest as validateRequestMiddleware } from './middleware/validation.middleware';
+import { validateRequest as validateRequestMiddleware } from './middleware/validation.middleware.js';
 
 const router = Router();
 

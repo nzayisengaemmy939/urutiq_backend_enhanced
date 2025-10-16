@@ -1,8 +1,8 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { asyncHandler } from './errors';
-import { authMiddleware } from './auth';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { asyncHandler } from './errors.js';
+import { authMiddleware } from './auth.js';
 
 export function mountAIInsightsRoutes(router: Router) {
   // Simple test endpoint

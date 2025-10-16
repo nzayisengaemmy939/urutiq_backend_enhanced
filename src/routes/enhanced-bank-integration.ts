@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { enhancedBankIntegrationService, BankFeedTransaction, BankIntegrationConfig } from '../services/enhanced-bank-integration';
-import { prisma } from '../prisma';
-import type { TenantRequest } from '../tenant';
+import { enhancedBankIntegrationService, BankFeedTransaction, BankIntegrationConfig } from '../services/enhanced-bank-integration.js';
+import { prisma } from '../prisma.js';
+import type { TenantRequest } from '../tenant.js';
 
 const router = express.Router();
 

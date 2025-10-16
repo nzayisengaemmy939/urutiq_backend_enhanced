@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
-import { asyncHandler } from './errors';
-import { prisma } from './prisma';
+import { asyncHandler } from './errors.js';
+import { prisma } from './prisma.js';
 
 const router = Router();
 

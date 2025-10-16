@@ -1,10 +1,10 @@
 import type { Router } from 'express';
-import { prisma } from '../prisma';
-import { TenantRequest } from '../tenant';
-import { validateBody, journalEntryTypeCreate, journalEntryCreate, journalEntryUpdate, journalEntryTemplateCreate, journalEntryApproval, journalEntrySearch, journalEntryReversal, journalEntryAdjustment, journalEntryApprovalRequest, journalEntryBatchCreate, journalEntryBatchApprove, journalEntryBatchPost, journalEntryBatchReverse, journalEntryCsvImport, journalSearchSave, journalSearchUpdate } from '../validate';
-import { ApiError } from '../errors';
-import { emailNotificationService } from '../services/email-notification.service';
-import { pdfGenerationService } from '../services/pdf-generation.service';
+import { prisma } from '../prisma.js';
+import { TenantRequest } from '../tenant.js';
+import { validateBody, journalEntryTypeCreate, journalEntryCreate, journalEntryUpdate, journalEntryTemplateCreate, journalEntryApproval, journalEntrySearch, journalEntryReversal, journalEntryAdjustment, journalEntryApprovalRequest, journalEntryBatchCreate, journalEntryBatchApprove, journalEntryBatchPost, journalEntryBatchReverse, journalEntryCsvImport, journalSearchSave, journalSearchUpdate } from '../validate.js';
+import { ApiError } from '../errors.js';
+import { emailNotificationService } from '../services/email-notification.service.js';
+import { pdfGenerationService } from '../services/pdf-generation.service.js';
 
 // Enhanced Journal Entry Types
 export interface JournalEntryType {

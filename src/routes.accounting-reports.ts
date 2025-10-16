@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
-import { TenantRequest } from './tenant';
+import { TenantRequest } from './tenant.js';
 import { authMiddleware, requireRoles } from './auth.js';
-import { apiKeyAuthMiddleware } from './middleware/api-key-auth';
-import { asyncHandler } from './errors';
-import { redisCache } from './services/redis-cache.service';
-import { cacheStrategies, cacheInvalidationMiddleware } from './middleware/cache.middleware';
+import { apiKeyAuthMiddleware } from './middleware/api-key-auth.js';
+import { asyncHandler } from './errors.js';
+import { redisCache } from './services/redis-cache.service.js';
+import { cacheStrategies, cacheInvalidationMiddleware } from './middleware/cache.middleware.js';
 
 const router = Router();
 const prisma = new PrismaClient();

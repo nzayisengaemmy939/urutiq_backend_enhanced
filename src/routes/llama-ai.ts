@@ -1,12 +1,12 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
-import type { TenantRequest } from '../tenant';
+import { asyncHandler } from '../errors.js';
+import type { TenantRequest } from '../tenant.js';
 import { authMiddleware, requireRoles } from '../auth.js';
-import { llamaEnhancedConversationalAI, LlamaConversationContext } from '../services/llama-enhanced-conversational-ai';
-import { llamaDocumentProcessor } from '../services/llama-document-processor';
-import { llamaPredictiveAnalytics } from '../services/llama-predictive-analytics';
-import { llamaComplianceAudit } from '../services/llama-compliance-audit';
-import { prisma } from '../prisma';
+import { llamaEnhancedConversationalAI, LlamaConversationContext } from '../services/llama-enhanced-conversational-ai.js';
+import { llamaDocumentProcessor } from '../services/llama-document-processor.js';
+import { llamaPredictiveAnalytics } from '../services/llama-predictive-analytics.js';
+import { llamaComplianceAudit } from '../services/llama-compliance-audit.js';
+import { prisma } from '../prisma.js';
 
 const router = express.Router();
 

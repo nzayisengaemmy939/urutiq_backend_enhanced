@@ -1,6 +1,6 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
 
 export function mountAccountingOverviewRoutes(router: Router) {
   // Get accounting overview - aggregates data from multiple sources

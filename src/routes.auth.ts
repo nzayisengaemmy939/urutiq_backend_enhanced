@@ -1,10 +1,10 @@
 import type { Router, Request } from 'express';
 import crypto from 'crypto';
-import { prisma } from './prisma';
-import { asyncHandler, ApiError } from './errors';
+import { prisma } from './prisma.js';
+import { asyncHandler, ApiError } from './errors.js';
 import type { Response } from 'express';
 import rateLimit from 'express-rate-limit';
-import { signDemoToken } from './auth';
+import { signDemoToken } from './auth.js';
 import { mfaLoginChallenge, mfaLoginVerify, mfaSetupVerify, mfaDisable, mfaBackupCodesRegenerate } from './validate.js';
 
 // Minimal TOTP implementation (RFC 6238) without external deps

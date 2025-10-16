@@ -1,12 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import { requireRoles } from '../middleware/auth';
-import { TenantRequest } from '../tenant';
+import { requireRoles } from '../middleware/auth.js';
+import { TenantRequest } from '../tenant.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-import { asyncHandler, ApiError } from '../errors';
-import fileStorageService from '../services/file-storage-service';
+import { asyncHandler, ApiError } from '../errors.js';
+import fileStorageService from '../services/file-storage-service.js';
 import mongoService from '../config/mongodb.js';
 
 const router = express.Router();

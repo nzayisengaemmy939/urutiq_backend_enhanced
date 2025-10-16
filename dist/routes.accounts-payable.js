@@ -1,9 +1,10 @@
 import { z } from 'zod';
-import { prisma } from './prisma';
-import { validateRequest as validateRequestMiddleware } from './middleware/validation.middleware';
+import { prisma } from './prisma.js';
+import { validateRequest as validateRequestMiddleware } from './middleware/validation.middleware.js';
 import { requireRoles } from './auth.js';
-import { addAudit } from './ai';
-import { processPostPaymentWorkflow } from './utils/post-payment-workflow';
+import { addAudit } from './ai.js';
+import { processPostPaymentWorkflow } from './utils/post-payment-workflow.js';
+import { Decimal } from '@prisma/client/runtime/library';
 // Validation schemas for comprehensive AP process
 const invoiceCaptureSchema = z.object({
     vendorId: z.string().min(1, 'Vendor is required'),
@@ -165,9 +166,9 @@ export function mountAccountsPayableRoutes(router) {
                     invoiceNumber: data.invoiceNumber,
                     invoiceDate: data.invoiceDate,
                     dueDate: data.dueDate,
-                    totalAmount: data.totalAmount,
-                    subtotal: data.subtotal,
-                    taxAmount: data.taxAmount,
+                    totalAmount: new Decimal(data.totalAmount),
+                    subtotal: new Decimal(data.subtotal),
+                    taxAmount: new Decimal(data.taxAmount),
                     currency: data.currency,
                     source: data.source,
                     rawData: data.rawData ? JSON.stringify(data.rawData) : (data.purchaseOrderId ? JSON.stringify({ purchaseOrderId: data.purchaseOrderId }) : null),
@@ -251,9 +252,9 @@ export function mountAccountsPayableRoutes(router) {
                     invoiceNumber: data.invoiceNumber,
                     invoiceDate: data.invoiceDate,
                     dueDate: data.dueDate,
-                    totalAmount: data.totalAmount,
-                    subtotal: data.subtotal,
-                    taxAmount: data.taxAmount,
+                    totalAmount: new Decimal(data.totalAmount),
+                    subtotal: new Decimal(data.subtotal),
+                    taxAmount: new Decimal(data.taxAmount),
                     currency: data.currency,
                     source: data.source,
                     rawData: data.rawData ? JSON.stringify(data.rawData) : (data.purchaseOrderId ? JSON.stringify({ purchaseOrderId: data.purchaseOrderId }) : null),
@@ -542,12 +543,12 @@ export function mountAccountsPayableRoutes(router) {
                     companyId,
                     billId: data.billId,
                     scheduledDate: data.scheduledDate,
-                    amount: data.amount,
+                    amount: new Decimal(data.amount),
                     paymentMethod: data.paymentMethod,
                     bankAccountId: data.bankAccountId,
                     priority: data.priority,
-                    earlyPaymentDiscount: data.earlyPaymentDiscount,
-                    latePaymentPenalty: data.latePaymentPenalty,
+                    earlyPaymentDiscount: new Decimal(data.earlyPaymentDiscount),
+                    latePaymentPenalty: new Decimal(data.latePaymentPenalty),
                     notes: data.notes
                 },
                 include: {

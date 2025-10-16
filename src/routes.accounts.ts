@@ -1,12 +1,12 @@
 
 
 import type { Router, Response } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { validateBody, schemas } from './validate';
-import { ApiError, asyncHandler } from './errors';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { validateBody, schemas } from './validate.js';
+import { ApiError, asyncHandler } from './errors.js';
 import type { Account, AccountType, Company } from '@prisma/client';
-import { authMiddleware, requireRoles } from './auth';
+import { authMiddleware, requireRoles } from './auth.js';
 const AUTH_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
 // --- Helper functions for validation and reuse ---
