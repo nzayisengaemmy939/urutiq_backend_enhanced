@@ -13,6 +13,20 @@ const AUTH_SECRET = process.env.JWT_SECRET || 'dev-secret';
 async function getCompanyOrThrow(tenantId: string, companyId: string): Promise<Company> {
   const company = await prisma.company.findFirst({ where: { id: companyId, tenantId } });
   if (!company) throw new ApiError(400, 'COMPANY_NOT_FOUND', 'Company not found');
+  
+  // Check if company has active status
+  const statusSetting = await prisma.companySetting.findFirst({
+    where: {
+      companyId: companyId,
+      key: 'status'
+    }
+  });
+  
+  // If status setting exists, only return if it's active
+  if (statusSetting && !['active', 'ACTIVE'].includes(statusSetting.value)) {
+    throw new ApiError(400, 'COMPANY_NOT_FOUND', 'Company not found or inactive');
+  }
+  
   return company;
 }
 

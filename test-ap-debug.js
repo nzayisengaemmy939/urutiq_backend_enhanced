@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Test configuration
-const BASE_URL = 'http://localhost:3001'; // Adjust port as needed
+const BASE_URL = 'http://localhost:4000'; // Correct port for API server
 const TEST_TENANT_ID = 'test-tenant';
 const TEST_COMPANY_ID = 'test-company';
 
