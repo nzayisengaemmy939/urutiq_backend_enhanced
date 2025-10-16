@@ -1,6 +1,6 @@
 import { Ollama } from 'ollama';
 import { HfInference } from '@huggingface/inference';
-import { llamaEnhancedConversationalAI } from './llama-enhanced-conversational-ai';
+import { llamaEnhancedConversationalAI } from './llama-enhanced-conversational-ai.js';
 export class LlamaDocumentProcessor {
     ollama;
     hfInference;

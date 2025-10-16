@@ -1,7 +1,7 @@
 import { Ollama } from 'ollama';
 import { HfInference } from '@huggingface/inference';
-import { llamaEnhancedConversationalAI } from './llama-enhanced-conversational-ai';
-import { prisma } from '../prisma';
+import { llamaEnhancedConversationalAI } from './llama-enhanced-conversational-ai.js';
+import { prisma } from '../prisma.js';
 export class LlamaComplianceAudit {
     ollama;
     hfInference;

@@ -1,4 +1,4 @@
-import { AIService } from './ai-service';
+import { AIService } from './ai-service.js';
 export class OCRService {
     /**
      * Check if Ollama is available
