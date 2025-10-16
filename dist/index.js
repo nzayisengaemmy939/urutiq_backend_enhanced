@@ -1,3 +1,7 @@
+// Load environment variables FIRST before any other imports
+import dotenv from 'dotenv';
+dotenv.config();
+console.log('🔧 dotenv loaded, checking PORT_BACKEND:', process.env.PORT_BACKEND);
 import express from "express";
 import cors from "cors";
 import crypto from "crypto";

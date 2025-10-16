@@ -2,9 +2,12 @@
  * Backend Environment Configuration
  * This centralizes all environment variables - no fallbacks
  */
+// Debug: Log all environment variables
+console.log('🔧 All environment variables:', Object.keys(process.env).filter(key => key.includes('PORT') || key.includes('JWT') || key.includes('DATABASE') || key.includes('HOST') || key.includes('NODE_ENV') || key.includes('API') || key.includes('FRONTEND')));
 // Get environment variables - throws error if not set
 const getEnvVar = (key) => {
     const value = process.env[key];
+    console.log(`🔧 Environment variable ${key}:`, value);
     if (!value) {
         throw new Error(`Environment variable ${key} is required but not set`);
     }
@@ -12,6 +15,7 @@ const getEnvVar = (key) => {
 };
 const getEnvVarNumber = (key) => {
     const value = process.env[key];
+    console.log(`🔧 Environment variable ${key}:`, value);
     if (!value) {
         throw new Error(`Environment variable ${key} is required but not set`);
     }
@@ -21,26 +25,35 @@ const getEnvVarNumber = (key) => {
     }
     return num;
 };
+// Lazy loading configuration - only evaluate when accessed
 export const config = {
     // Server Configuration
-    server: {
-        port: getEnvVarNumber('PORT_BACKEND'),
-        host: getEnvVar('HOST'),
-        environment: getEnvVar('NODE_ENV'),
+    get server() {
+        return {
+            port: getEnvVarNumber('PORT_BACKEND'),
+            host: getEnvVar('HOST'),
+            environment: getEnvVar('NODE_ENV'),
+        };
     },
     // API Configuration
-    api: {
-        baseUrl: getEnvVar('API_BASE_URL'),
-        frontendUrl: getEnvVar('FRONTEND_URL'),
+    get api() {
+        return {
+            baseUrl: getEnvVar('API_BASE_URL'),
+            frontendUrl: getEnvVar('FRONTEND_URL'),
+        };
     },
     // Database Configuration
-    database: {
-        url: getEnvVar('DATABASE_URL'),
+    get database() {
+        return {
+            url: getEnvVar('DATABASE_URL'),
+        };
     },
     // Authentication
-    auth: {
-        jwtSecret: getEnvVar('JWT_SECRET'),
-        jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN'),
+    get auth() {
+        return {
+            jwtSecret: getEnvVar('JWT_SECRET'),
+            jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN'),
+        };
     },
     // Email Configuration (optional - with fallbacks)
     email: {

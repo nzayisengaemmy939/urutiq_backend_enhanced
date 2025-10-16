@@ -29,29 +29,38 @@ const getEnvVarNumber = (key: string): number => {
   return num;
 };
 
+// Lazy loading configuration - only evaluate when accessed
 export const config = {
   // Server Configuration
-  server: {
-    port: getEnvVarNumber('PORT_BACKEND'),
-    host: getEnvVar('HOST'),
-    environment: getEnvVar('NODE_ENV'),
+  get server() {
+    return {
+      port: getEnvVarNumber('PORT_BACKEND'),
+      host: getEnvVar('HOST'),
+      environment: getEnvVar('NODE_ENV'),
+    };
   },
 
   // API Configuration
-  api: {
-    baseUrl: getEnvVar('API_BASE_URL'),
-    frontendUrl: getEnvVar('FRONTEND_URL'),
+  get api() {
+    return {
+      baseUrl: getEnvVar('API_BASE_URL'),
+      frontendUrl: getEnvVar('FRONTEND_URL'),
+    };
   },
 
   // Database Configuration
-  database: {
-    url: getEnvVar('DATABASE_URL'),
+  get database() {
+    return {
+      url: getEnvVar('DATABASE_URL'),
+    };
   },
 
   // Authentication
-  auth: {
-    jwtSecret: getEnvVar('JWT_SECRET'),
-    jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN'),
+  get auth() {
+    return {
+      jwtSecret: getEnvVar('JWT_SECRET'),
+      jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN'),
+    };
   },
 
   // Email Configuration (optional - with fallbacks)
