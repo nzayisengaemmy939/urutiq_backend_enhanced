@@ -1,0 +1,32 @@
+{
+  "profiles": [
+    {
+      "productId": "403eb546-56bf-4b2e-987d-6bb05a09cadd",
+      "categoryId": "photography-equipment",
+      "riskLevel": "high",
+      "mandatoryRequirements": {
+        "insurance": true,
+        "inspection": true,
+        "minCoverage": 25000,
+        "inspectionTypes": [
+          "pre_rental",
+          "post_rental"
+        ],
+        "complianceDeadlineHours": 12
+      },
+      "riskFactors": [
+        "high_value",
+        "fragile",
+        "technical_complexity"
+      ],
+      "mitigationStrategies": [
+        "require_insurance",
+        "mandatory_inspection",
+        "user_training"
+      ],
+      "enforcementLevel": "strict",
+      "autoEnforcement": true,
+      "gracePeriodHours": 24
+    }
+  ]
+}

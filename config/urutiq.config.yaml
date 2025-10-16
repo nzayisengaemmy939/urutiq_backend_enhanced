@@ -1,0 +1,13 @@
+services:
+  api:
+    port: 4000
+security:
+  cors:
+    allowedOrigins:
+      - "*"
+database:
+  provider: sqlite
+  url: file:./prisma/dev.db
+ai:
+  provider: openai
+  apiKey: ${OPENAI_API_KEY}

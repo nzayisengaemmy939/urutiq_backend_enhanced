@@ -1,0 +1,492 @@
+// Enhanced Inventory Management Schema - Competitive Features
+// This file contains the enhanced models for competitive inventory management
+
+// Enhanced Product Model with competitive features
+model Product {
+  id            String   @id @default(cuid())
+  tenantId      String
+  companyId     String
+  
+  // Basic Information
+  name          String
+  sku           String
+  description   String?
+  type          ProductType @default(PRODUCT)
+  
+  // Pricing & Costing
+  unitPrice     Decimal  @default(0)
+  costPrice     Decimal  @default(0)
+  margin        Decimal? // Calculated margin percentage
+  
+  // Inventory Tracking
+  stockQuantity Decimal  @default(0)
+  reservedQuantity Decimal @default(0) // Reserved for orders
+  availableQuantity Decimal @default(0) // Available = stock - reserved
+  
+  // Multi-Location Support
+  locations     ProductLocation[]
+  
+  // Reorder Management
+  reorderPoint  Decimal? // Minimum stock level
+  reorderQuantity Decimal? // Suggested reorder amount
+  maxStockLevel Decimal? // Maximum stock level
+  
+  // Product Attributes
+  category      String?
+  brand         String?
+  model         String?
+  weight        Decimal?
+  dimensions    String? // JSON: {length, width, height}
+  
+  // Barcode & Identification
+  barcode       String? // Primary barcode
+  barcodes      ProductBarcode[] // Multiple barcodes
+  qrCode        String? // QR code for mobile scanning
+  
+  // Serial & Batch Tracking
+  trackSerialNumbers Boolean @default(false)
+  trackBatches       Boolean @default(false)
+  serialNumbers      SerialNumber[]
+  batches            ProductBatch[]
+  
+  // Costing Method
+  costingMethod CostingMethod @default(FIFO)
+  
+  // Status & Lifecycle
+  status        ProductStatus @default(ACTIVE)
+  isActive      Boolean @default(true)
+  
+  // Tax Information
+  taxCode       String?
+  taxExempt     Boolean @default(false)
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  company       Company  @relation(fields: [companyId], references: [id])
+  movements     InventoryMovement[]
+  invoiceLines  InvoiceLine[]
+  estimateLines EstimateLine[]
+  purchaseOrderLines PurchaseOrderLine[]
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, sku])
+  @@index([tenantId, companyId, status])
+  @@index([tenantId, companyId, category])
+  @@unique([tenantId, companyId, sku])
+}
+
+// Multi-Location Inventory Tracking
+model ProductLocation {
+  id            String   @id @default(cuid())
+  tenantId      String
+  productId     String
+  locationId    String
+  
+  // Location-specific inventory
+  stockQuantity Decimal  @default(0)
+  reservedQuantity Decimal @default(0)
+  availableQuantity Decimal @default(0)
+  
+  // Location-specific settings
+  reorderPoint  Decimal?
+  maxStockLevel Decimal?
+  binLocation   String? // Warehouse bin/shelf location
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  product       Product  @relation(fields: [productId], references: [id])
+  location      Location @relation(fields: [locationId], references: [id])
+  
+  @@unique([tenantId, productId, locationId])
+  @@index([tenantId, productId])
+  @@index([tenantId, locationId])
+}
+
+// Warehouse/Location Management
+model Location {
+  id            String   @id @default(cuid())
+  tenantId      String
+  companyId     String
+  
+  name          String
+  code          String
+  type          LocationType @default(WAREHOUSE)
+  address       String?
+  
+  // Location Settings
+  isActive      Boolean @default(true)
+  isDefault     Boolean @default(false) // Default location for company
+  
+  // Contact Information
+  contactName   String?
+  phone         String?
+  email         String?
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  company       Company @relation(fields: [companyId], references: [id])
+  products      ProductLocation[]
+  movements     InventoryMovement[]
+  
+  @@index([tenantId, companyId])
+  @@unique([tenantId, companyId, code])
+}
+
+// Enhanced Inventory Movement with Location Support
+model InventoryMovement {
+  id            String   @id @default(cuid())
+  tenantId      String
+  productId     String
+  locationId    String?
+  
+  // Movement Details
+  movementType  MovementType
+  quantity      Decimal
+  unitCost      Decimal? // Cost per unit for this movement
+  totalCost     Decimal? // Total cost (quantity * unitCost)
+  
+  // Reference Information
+  reference     String? // Invoice, PO, Adjustment number
+  referenceType String? // INVOICE, PURCHASE_ORDER, ADJUSTMENT, TRANSFER
+  referenceId   String? // ID of the referenced document
+  
+  // Serial & Batch Tracking
+  serialNumbers String? // JSON array of serial numbers
+  batchNumber   String?
+  batchId       String?
+  
+  // Movement Details
+  movementDate  DateTime
+  reason        String? // Reason for movement
+  notes         String?
+  
+  // User Tracking
+  performedBy   String? // User who performed the movement
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  
+  // Relations
+  product       Product  @relation(fields: [productId], references: [id])
+  location      Location? @relation(fields: [locationId], references: [id])
+  user          AppUser? @relation("InventoryMovementUser", fields: [performedBy], references: [id])
+  
+  @@index([tenantId, productId])
+  @@index([tenantId, locationId])
+  @@index([tenantId, movementType])
+  @@index([tenantId, movementDate])
+  @@index([tenantId, referenceType, referenceId])
+}
+
+// Serial Number Tracking
+model SerialNumber {
+  id            String   @id @default(cuid())
+  tenantId      String
+  productId     String
+  
+  serialNumber  String
+  status        SerialStatus @default(AVAILABLE)
+  
+  // Purchase Information
+  purchaseDate  DateTime?
+  purchaseCost  Decimal?
+  supplier      String?
+  
+  // Sale Information
+  saleDate      DateTime?
+  salePrice     Decimal?
+  customerId    String?
+  
+  // Warranty Information
+  warrantyStart DateTime?
+  warrantyEnd   DateTime?
+  
+  // Location
+  currentLocation String?
+  
+  // Notes
+  notes         String?
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  product       Product  @relation(fields: [productId], references: [id])
+  customer      Customer? @relation(fields: [customerId], references: [id])
+  
+  @@unique([tenantId, productId, serialNumber])
+  @@index([tenantId, productId])
+  @@index([tenantId, serialNumber])
+}
+
+// Batch/Lot Tracking
+model ProductBatch {
+  id            String   @id @default(cuid())
+  tenantId      String
+  productId     String
+  
+  batchNumber   String
+  quantity      Decimal
+  
+  // Batch Information
+  manufactureDate DateTime?
+  expirationDate  DateTime?
+  supplier       String?
+  
+  // Cost Information
+  unitCost      Decimal?
+  totalCost     Decimal?
+  
+  // Status
+  status        BatchStatus @default(ACTIVE)
+  
+  // Location
+  locationId    String?
+  
+  // Quality Control
+  qualityNotes  String?
+  testedBy      String?
+  testDate      DateTime?
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  product       Product  @relation(fields: [productId], references: [id])
+  location      Location? @relation(fields: [locationId], references: [id])
+  
+  @@unique([tenantId, productId, batchNumber])
+  @@index([tenantId, productId])
+  @@index([tenantId, batchNumber])
+}
+
+// Multiple Barcode Support
+model ProductBarcode {
+  id            String   @id @default(cuid())
+  tenantId      String
+  productId     String
+  
+  barcode       String
+  type          BarcodeType @default(UPC)
+  isPrimary     Boolean @default(false)
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  
+  // Relations
+  product       Product  @relation(fields: [productId], references: [id])
+  
+  @@unique([tenantId, productId, barcode])
+  @@index([tenantId, productId])
+}
+
+// Reorder Alerts & Automation
+model ReorderAlert {
+  id            String   @id @default(cuid())
+  tenantId      String
+  companyId     String
+  productId     String
+  locationId    String?
+  
+  // Alert Configuration
+  alertType     AlertType
+  threshold     Decimal // Stock level that triggers alert
+  isActive      Boolean @default(true)
+  
+  // Alert Status
+  status        AlertStatus @default(PENDING)
+  triggeredAt   DateTime?
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
+  
+  // Auto Actions
+  autoReorder   Boolean @default(false)
+  reorderQuantity Decimal?
+  supplierId    String?
+  
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  product       Product  @relation(fields: [productId], references: [id])
+  location      Location? @relation(fields: [locationId], references: [id])
+  supplier      Supplier? @relation(fields: [supplierId], references: [id])
+  acknowledgedByUser AppUser? @relation("ReorderAlertUser", fields: [acknowledgedBy], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, productId])
+  @@index([tenantId, status])
+}
+
+// Inventory Transfers Between Locations
+model InventoryTransfer {
+  id            String   @id @default(cuid())
+  tenantId      String
+  companyId     String
+  
+  transferNumber String
+  status        TransferStatus @default(DRAFT)
+  
+  // Transfer Details
+  fromLocationId String
+  toLocationId   String
+  transferDate   DateTime
+  
+  // Reference Information
+  reason        String?
+  notes         String?
+  
+  // User Tracking
+  requestedBy   String?
+  approvedBy    String?
+  completedBy   String?
+  
+  // Timestamps
+  requestedAt   DateTime @default(now())
+  approvedAt    DateTime?
+  completedAt   DateTime?
+  
+  // Relations
+  company       Company @relation(fields: [companyId], references: [id])
+  fromLocation  Location @relation("TransferFrom", fields: [fromLocationId], references: [id])
+  toLocation    Location @relation("TransferTo", fields: [toLocationId], references: [id])
+  lines         InventoryTransferLine[]
+  requestedByUser AppUser? @relation("TransferRequester", fields: [requestedBy], references: [id])
+  approvedByUser AppUser? @relation("TransferApprover", fields: [approvedBy], references: [id])
+  completedByUser AppUser? @relation("TransferCompleter", fields: [completedBy], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@unique([tenantId, companyId, transferNumber])
+}
+
+model InventoryTransferLine {
+  id            String   @id @default(cuid())
+  tenantId      String
+  transferId    String
+  productId     String
+  
+  quantity      Decimal
+  unitCost      Decimal?
+  
+  // Serial & Batch Tracking
+  serialNumbers String? // JSON array
+  batchNumber   String?
+  
+  // Status
+  status        TransferLineStatus @default(PENDING)
+  
+  // Relations
+  transfer      InventoryTransfer @relation(fields: [transferId], references: [id])
+  product       Product @relation(fields: [productId], references: [id])
+  
+  @@index([tenantId, transferId])
+  @@index([tenantId, productId])
+}
+
+// Enums
+enum ProductType {
+  PRODUCT
+  SERVICE
+  BUNDLE
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+enum CostingMethod {
+  FIFO
+  LIFO
+  WEIGHTED_AVERAGE
+  SPECIFIC_IDENTIFICATION
+}
+
+enum LocationType {
+  WAREHOUSE
+  STORE
+  OFFICE
+  VEHICLE
+  CUSTOMER_LOCATION
+}
+
+enum MovementType {
+  INBOUND
+  OUTBOUND
+  TRANSFER_IN
+  TRANSFER_OUT
+  ADJUSTMENT_IN
+  ADJUSTMENT_OUT
+  RETURN_IN
+  RETURN_OUT
+  DAMAGE
+  THEFT
+  CYCLE_COUNT
+}
+
+enum SerialStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  DAMAGED
+  RETURNED
+}
+
+enum BatchStatus {
+  ACTIVE
+  EXPIRED
+  DAMAGED
+  QUARANTINED
+}
+
+enum BarcodeType {
+  UPC
+  EAN
+  CODE128
+  QR_CODE
+  CUSTOM
+}
+
+enum AlertType {
+  LOW_STOCK
+  OUT_OF_STOCK
+  OVERSTOCK
+  EXPIRING_SOON
+  EXPIRED
+}
+
+enum AlertStatus {
+  PENDING
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+enum TransferStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+}
+
+enum TransferLineStatus {
+  PENDING
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+}
