@@ -1,3 +1,6 @@
+// Load environment variables FIRST before any other imports
+import './load-env';
+
 import express from "express";
 import cors from "cors";
 import crypto from "crypto";
