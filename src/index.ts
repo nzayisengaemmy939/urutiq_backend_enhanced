@@ -8,7 +8,7 @@ import cors from "cors";
 import crypto from "crypto";
 import fs from "fs";
 import multer from "multer";
-import { config, getApiUrl } from "./config";
+import { config, getApiUrl } from "./config.js";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth";
 import type { Role } from './auth';
 import { prisma } from "./prisma";

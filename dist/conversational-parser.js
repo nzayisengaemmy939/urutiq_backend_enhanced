@@ -1,5 +1,5 @@
 import { prisma } from './prisma';
-import { config } from './config';
+import { config } from './config.js';
 // Common accounting patterns and keywords
 const ACCOUNTING_PATTERNS = {
     // Transaction types

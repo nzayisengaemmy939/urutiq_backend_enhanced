@@ -1,5 +1,5 @@
 import { prisma } from './prisma';
-import { config } from './config';
+import { config } from './config.js';
 import { validateBody, schemas } from './validate';
 import { prisma as db } from './prisma';
 import { getAccountByPurpose } from './accounts';

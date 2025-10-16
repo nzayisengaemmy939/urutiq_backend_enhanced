@@ -11,7 +11,7 @@ import {
   type AIPromptConfig,
   type AIBehaviorConfig,
   type AICategoryConfig
-} from './ai-config';
+} from './ai-config.js';
 
 export function mountAIConfigRoutes(router: Router) {
   // Get all available industry configurations

@@ -1,8 +1,8 @@
 import { prisma } from './prisma';
 import { addInsight, logAnomaly, addAudit } from './ai';
-import { aiConfigurationService, DEFAULT_BEHAVIOR_CONFIG } from './ai-config';
+import { aiConfigurationService, DEFAULT_BEHAVIOR_CONFIG } from './ai-config.js';
 // Ollama API configuration
-import { config } from './config';
+import { config } from './config.js';
 const OLLAMA_BASE_URL = config.ai.ollamaBaseUrl;
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3.1:8b';
 class EnhancedAIService {

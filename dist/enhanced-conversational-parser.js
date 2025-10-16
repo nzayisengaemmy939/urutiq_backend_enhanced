@@ -1,4 +1,4 @@
-import { config } from './config';
+import { config } from './config.js';
 // Enhanced accounting patterns with industry-specific keywords
 const ENHANCED_ACCOUNTING_PATTERNS = {
     // Transaction types with context

@@ -4,7 +4,7 @@ import { TenantRequest } from './tenant';
 import { asyncHandler } from './errors';
 import type { Response } from 'express';
 import { enhancedAIService } from './ai-enhanced';
-import { config } from './config';
+import { config } from './config.js';
 
 export function mountEnhancedAIRoutes(router: Router) {
   // 1. Transaction Categorization (AI Bookkeeping)

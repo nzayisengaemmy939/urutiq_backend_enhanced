@@ -1,6 +1,6 @@
 import { prisma } from './prisma';
-import { aiConfigurationService } from './ai-config';
-import { config } from './config';
+import { aiConfigurationService } from './ai-config.js';
+import { config } from './config.js';
 
 // Enhanced interfaces for the conversational parser
 export interface ParsedTransaction {

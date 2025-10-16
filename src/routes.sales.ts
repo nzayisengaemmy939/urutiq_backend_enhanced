@@ -1,7 +1,7 @@
 import type { Router } from 'express';
 import { prisma } from './prisma';
 import { TenantRequest } from './tenant';
-import { config } from './config';
+import { config } from './config.js';
 import { validateBody, schemas } from './validate';
 import { prisma as db } from './prisma';
 import { getAccountByPurpose } from './accounts';

@@ -7,7 +7,7 @@ import cors from "cors";
 import crypto from "crypto";
 import fs from "fs";
 import multer from "multer";
-import { config } from "./config";
+import { config } from "./config.js";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth";
 import { prisma } from "./prisma";
 import { tenantMiddleware } from "./tenant";

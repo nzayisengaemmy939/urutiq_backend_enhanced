@@ -1,6 +1,6 @@
 import { prisma } from './prisma';
 import { asyncHandler } from './errors';
-import { aiConfigurationService, DEFAULT_INDUSTRY_CONFIGS, DEFAULT_AI_CONFIG, DEFAULT_BEHAVIOR_CONFIG } from './ai-config';
+import { aiConfigurationService, DEFAULT_INDUSTRY_CONFIGS, DEFAULT_AI_CONFIG, DEFAULT_BEHAVIOR_CONFIG } from './ai-config.js';
 export function mountAIConfigRoutes(router) {
     // Get all available industry configurations
     router.get('/ai/config/industries', asyncHandler(async (req, res) => {

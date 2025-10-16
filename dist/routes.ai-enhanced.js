@@ -1,7 +1,7 @@
 import { prisma } from './prisma';
 import { asyncHandler } from './errors';
 import { enhancedAIService } from './ai-enhanced';
-import { config } from './config';
+import { config } from './config.js';
 export function mountEnhancedAIRoutes(router) {
     // 1. Transaction Categorization (AI Bookkeeping)
     router.post('/ai/categorize/transaction', asyncHandler(async (req, res) => {
