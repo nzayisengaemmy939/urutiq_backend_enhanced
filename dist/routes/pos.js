@@ -39,12 +39,53 @@ export function mountPOSRoutes(router) {
             const emailMessage = message || 'Thank you for your purchase. Please find your receipt attached.';
             // Create transporter from env (same as invoice email)
             const smtpUrl = process.env.SMTP_URL;
-            let transporter = smtpUrl ? nodemailer.createTransport(smtpUrl) : nodemailer.createTransport({
-                host: process.env.SMTP_HOST,
-                port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587,
-                secure: !!process.env.SMTP_SECURE && process.env.SMTP_SECURE !== 'false',
-                auth: (process.env.SMTP_USER || process.env.SMTP_PASS) ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
-            });
+            let transporter;
+            try {
+                if (smtpUrl) {
+                    transporter = nodemailer.createTransport(smtpUrl);
+                }
+                else {
+                    // Check if SMTP is configured
+                    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+                        console.warn('⚠️ SMTP not configured, using mock email service');
+                        // Return success without actually sending email
+                        return res.json({
+                            ok: true,
+                            success: true,
+                            message: 'Receipt email queued (SMTP not configured)',
+                            sentTo: to,
+                            id: 'mock-' + Date.now(),
+                            warning: 'Email service not configured - receipt was not actually sent'
+                        });
+                    }
+                    transporter = nodemailer.createTransport({
+                        host: process.env.SMTP_HOST,
+                        port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587,
+                        secure: !!process.env.SMTP_SECURE && process.env.SMTP_SECURE !== 'false',
+                        auth: {
+                            user: process.env.SMTP_USER,
+                            pass: process.env.SMTP_PASS
+                        },
+                        // Add connection timeout and retry options
+                        connectionTimeout: 10000,
+                        greetingTimeout: 5000,
+                        socketTimeout: 10000,
+                        pool: true,
+                        maxConnections: 5,
+                        maxMessages: 100,
+                        rateDelta: 20000,
+                        rateLimit: 5
+                    });
+                }
+            }
+            catch (transporterError) {
+                console.error('❌ Failed to create email transporter:', transporterError);
+                return res.status(500).json({
+                    ok: false,
+                    error: 'Email service configuration error',
+                    details: transporterError instanceof Error ? transporterError.message : 'Unknown error'
+                });
+            }
             const from = process.env.SMTP_FROM || process.env.REPORTS_FROM_EMAIL || 'no-reply@urutiIQ.local';
             // Prepare email
             const mailOptions = {
@@ -77,23 +118,68 @@ export function mountPOSRoutes(router) {
             console.log('SMTP Config:', {
                 host: process.env.SMTP_HOST,
                 port: process.env.SMTP_PORT,
-                user: process.env.SMTP_USER
+                user: process.env.SMTP_USER,
+                hasPassword: !!process.env.SMTP_PASS
             });
-            const info = await transporter.sendMail(mailOptions);
-            const accepted = info?.accepted || [];
-            if (accepted.length === 0)
-                return res.status(502).json({ ok: false, error: 'not_accepted', provider: info });
-            res.json({
-                ok: true,
-                success: true,
-                message: 'Receipt sent successfully',
-                sentTo: to,
-                id: info.messageId || true
-            });
+            try {
+                // Verify transporter connection first
+                await transporter.verify();
+                console.log('✅ SMTP connection verified');
+                const info = await transporter.sendMail(mailOptions);
+                console.log('✅ Email sent successfully:', info.messageId);
+                const accepted = info?.accepted || [];
+                if (accepted.length === 0) {
+                    console.warn('⚠️ Email was not accepted by any recipients');
+                    return res.status(502).json({
+                        ok: false,
+                        error: 'Email not accepted by recipient server',
+                        details: info
+                    });
+                }
+                res.json({
+                    ok: true,
+                    success: true,
+                    message: 'Receipt sent successfully',
+                    sentTo: to,
+                    id: info.messageId || 'sent-' + Date.now()
+                });
+            }
+            catch (sendError) {
+                console.error('❌ Email send failed:', sendError);
+                throw sendError; // Re-throw to be caught by outer catch block
+            }
         }
         catch (e) {
             console.error('❌ Email receipt send failed:', e);
-            res.status(500).json({ ok: false, error: e instanceof Error ? e.message : 'send_failed' });
+            // Provide more specific error messages
+            let errorMessage = 'Email send failed';
+            let statusCode = 500;
+            if (e.code === 'EAUTH') {
+                errorMessage = 'Email authentication failed - check SMTP credentials';
+                statusCode = 401;
+            }
+            else if (e.code === 'ECONNECTION') {
+                errorMessage = 'Cannot connect to email server - check SMTP host and port';
+                statusCode = 503;
+            }
+            else if (e.code === 'ETIMEDOUT') {
+                errorMessage = 'Email server timeout - please try again';
+                statusCode = 504;
+            }
+            else if (e.message?.includes('Invalid email')) {
+                errorMessage = 'Invalid email address format';
+                statusCode = 400;
+            }
+            else if (e.message?.includes('SMTP')) {
+                errorMessage = 'SMTP configuration error';
+                statusCode = 500;
+            }
+            res.status(statusCode).json({
+                ok: false,
+                error: errorMessage,
+                details: e instanceof Error ? e.message : 'Unknown error',
+                code: e.code || 'UNKNOWN'
+            });
         }
     });
     /**

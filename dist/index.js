@@ -658,18 +658,15 @@ app.get("/api/companies", authMiddleware(process.env.JWT_SECRET || "dev-secret")
     const { country, currency, q, status } = req.query;
     const page = Math.max(1, parseInt(req.query.page || "1", 10));
     const pageSize = Math.min(100, Math.max(1, parseInt(req.query.pageSize || "20", 10)));
-    const where = {
-        tenantId: req.tenantId,
-        country: country || undefined,
-        currency: currency || undefined,
-        name: q ? { contains: q, mode: "insensitive" } : undefined
-    };
-    // Get all companies first, then filter by status if needed
-    let companies = await prisma.company.findMany({
-        where,
+    // First, get all companies for this tenant
+    const allCompanies = await prisma.company.findMany({
+        where: {
+            tenantId: req.tenantId,
+            country: country || undefined,
+            currency: currency || undefined,
+            name: q ? { contains: q, mode: "insensitive" } : undefined
+        },
         orderBy: { createdAt: "desc" },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
         include: {
             _count: {
                 select: {
@@ -682,9 +679,11 @@ app.get("/api/companies", authMiddleware(process.env.JWT_SECRET || "dev-secret")
             companySettings: true
         }
     });
-    // Filter by status using CompanySetting if status is specified
+    // Filter companies by status - default to active companies only
+    let companies = allCompanies;
     if (status && status !== 'all') {
-        const companyIds = companies.map(c => c.id);
+        // Filter by specific status if provided
+        const companyIds = allCompanies.map(c => c.id);
         const statusSettings = await prisma.companySetting.findMany({
             where: {
                 companyId: { in: companyIds },
@@ -692,15 +691,33 @@ app.get("/api/companies", authMiddleware(process.env.JWT_SECRET || "dev-secret")
                 value: status
             }
         });
-        const activeCompanyIds = statusSettings.map(s => s.companyId);
-        companies = companies.filter(c => activeCompanyIds.includes(c.id));
+        const filteredCompanyIds = statusSettings.map(s => s.companyId);
+        companies = allCompanies.filter(c => filteredCompanyIds.includes(c.id));
     }
-    let total = await prisma.company.count({ where });
-    let rows = companies;
+    else {
+        // Default behavior: only show active companies
+        const companyIds = allCompanies.map(c => c.id);
+        const activeStatusSettings = await prisma.companySetting.findMany({
+            where: {
+                companyId: { in: companyIds },
+                key: 'status',
+                value: { in: ['active', 'ACTIVE'] } // Accept both lowercase and uppercase
+            }
+        });
+        const activeCompanyIds = activeStatusSettings.map(s => s.companyId);
+        // Only include companies that explicitly have active status in companySettings
+        // Companies without status settings are treated as inactive
+        companies = allCompanies.filter(c => activeCompanyIds.includes(c.id));
+    }
+    // Apply pagination to filtered companies
+    const total = companies.length;
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const rows = companies.slice(startIndex, endIndex);
     // Dev bootstrap: if tenant has no companies, create two defaults and re-query
     if (total === 0 && process.env.NODE_ENV !== 'production') {
         const defaults = [
-            { id: 'seed-company-1', name: 'Uruti Hub Limited', country: 'US', currency: 'USD' },
+            { id: 'seed-company-1', name: 'Urutiq Demo Company', country: 'US', currency: 'USD' },
             { id: 'seed-company-2', name: 'Acme Trading Co', country: 'US', currency: 'USD' },
         ];
         for (const c of defaults) {
@@ -709,18 +726,55 @@ app.get("/api/companies", authMiddleware(process.env.JWT_SECRET || "dev-secret")
                 update: {},
                 create: { tenantId: req.tenantId, ...c }
             });
+            // Ensure the company has active status
+            await prisma.companySetting.upsert({
+                where: {
+                    tenantId_companyId_key: {
+                        tenantId: req.tenantId,
+                        companyId: c.id,
+                        key: 'status'
+                    }
+                },
+                update: { value: 'active' },
+                create: {
+                    tenantId: req.tenantId,
+                    companyId: c.id,
+                    key: 'status',
+                    value: 'active'
+                }
+            });
         }
-        total = await prisma.company.count({ where: { tenantId: req.tenantId } });
-        rows = await prisma.company.findMany({
+        // Re-fetch companies with active status filter applied
+        const newAllCompanies = await prisma.company.findMany({
             where: { tenantId: req.tenantId },
             orderBy: { createdAt: 'desc' },
-            skip: (page - 1) * pageSize,
-            take: pageSize,
             include: {
-                _count: { select: { invoices: true, bills: true, customers: true, vendors: true } },
+                _count: {
+                    select: {
+                        invoices: true,
+                        bills: true,
+                        customers: true,
+                        vendors: true
+                    }
+                },
                 companySettings: true
             }
         });
+        // Apply active status filter to new companies
+        const newCompanyIds = newAllCompanies.map(c => c.id);
+        const newActiveStatusSettings = await prisma.companySetting.findMany({
+            where: {
+                companyId: { in: newCompanyIds },
+                key: 'status',
+                value: { in: ['active', 'ACTIVE'] }
+            }
+        });
+        const newActiveCompanyIds = newActiveStatusSettings.map(s => s.companyId);
+        const filteredNewCompanies = newAllCompanies.filter(c => newActiveCompanyIds.includes(c.id));
+        total = filteredNewCompanies.length;
+        const newStartIndex = (page - 1) * pageSize;
+        const newEndIndex = newStartIndex + pageSize;
+        rows = filteredNewCompanies.slice(newStartIndex, newEndIndex);
     }
     const totalPages = Math.max(1, Math.ceil(total / pageSize));
     res.json({
@@ -1173,6 +1227,17 @@ app.get("/api/companies/:id", authMiddleware(process.env.JWT_SECRET || "dev-secr
     });
     if (!company) {
         throw new ApiError(404, 'company_not_found', 'Company not found');
+    }
+    // Check if company has active status
+    const statusSetting = await prisma.companySetting.findFirst({
+        where: {
+            companyId: id,
+            key: 'status'
+        }
+    });
+    // If status setting exists, only return if it's active
+    if (statusSetting && !['active', 'ACTIVE'].includes(statusSetting.value)) {
+        throw new ApiError(404, 'company_not_found', 'Company not found or inactive');
     }
     res.json(company);
 }));

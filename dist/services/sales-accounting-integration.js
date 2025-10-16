@@ -1,6 +1,24 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma } from '../prisma.js';
 export class SalesAccountingIntegrationService {
+    /**
+     * Ensure we're using the shared Prisma instance and not creating new connections
+     */
+    getDatabase() {
+        return prisma;
+    }
+    /**
+     * Clean up any potential connection issues
+     */
+    async cleanup() {
+        try {
+            // Force disconnect and reconnect if needed
+            await prisma.$disconnect();
+            console.log('✅ Prisma connection cleaned up');
+        }
+        catch (error) {
+            console.error('❌ Error during cleanup:', error);
+        }
+    }
     /**
      * Test function to verify journal entry calculation logic
      */
@@ -181,7 +199,7 @@ export class SalesAccountingIntegrationService {
     async processInvoicePayment(invoiceId, tenantId) {
         try {
             // Get the invoice with all related data
-            const invoice = await prisma.invoice.findFirst({
+            const invoice = await this.getDatabase().invoice.findFirst({
                 where: { id: invoiceId, tenantId },
                 include: {
                     lines: {
@@ -201,7 +219,7 @@ export class SalesAccountingIntegrationService {
             if (!inventoryValidation.valid) {
                 throw new Error(`Insufficient inventory: ${inventoryValidation.errors.join(', ')}`);
             }
-            const result = await prisma.$transaction(async (tx) => {
+            const result = await this.getDatabase().$transaction(async (tx) => {
                 // 1. Create accounting journal entries
                 const journalEntryId = await this.createSalesAccountingEntries(invoice, tenantId, tx);
                 // 2. Update inventory for sold products
@@ -219,11 +237,21 @@ export class SalesAccountingIntegrationService {
                     inventoryMovements: inventoryMovementIds,
                     success: true
                 };
+            }, {
+                timeout: 30000, // Increase timeout to 30 seconds
+                maxWait: 15000, // Maximum time to wait for transaction to start
+                isolationLevel: 'ReadCommitted' // Use less strict isolation for better performance
             });
             return result;
         }
         catch (error) {
             console.error('Error processing invoice payment:', error);
+            // Check if it's a connection error
+            if (error.message?.includes('too many connections') || error.message?.includes('connection')) {
+                console.error('🔌 Database connection issue detected');
+                // Try to cleanup connections
+                await this.cleanup();
+            }
             throw new Error(`Failed to process invoice payment: ${error.message}`);
         }
     }
@@ -231,7 +259,7 @@ export class SalesAccountingIntegrationService {
      * Create double-entry accounting journal entries for sales
      */
     async createSalesAccountingEntries(invoice, tenantId, tx) {
-        const db = tx || prisma;
+        const db = tx || this.getDatabase();
         try {
             // Get or create required accounts
             const accounts = await this.getOrCreateSalesAccounts(invoice.companyId, tenantId, db);
@@ -425,7 +453,7 @@ export class SalesAccountingIntegrationService {
      * Update inventory for sold products
      */
     async updateInventoryForSales(invoice, tenantId, tx) {
-        const db = tx || prisma;
+        const db = tx || this.getDatabase();
         const movementIds = [];
         try {
             if (!invoice.lines || invoice.lines.length === 0) {
@@ -538,65 +566,139 @@ export class SalesAccountingIntegrationService {
      * Get or create required accounts for sales accounting
      */
     async getOrCreateSalesAccounts(companyId, tenantId, db) {
-        const database = db || prisma;
-        // Define account mappings with type codes
+        const database = db || this.getDatabase();
+        // Validate company exists
+        const company = await database.company.findFirst({
+            where: { id: companyId, tenantId }
+        });
+        if (!company) {
+            throw new Error(`Company with ID ${companyId} not found for tenant ${tenantId}`);
+        }
+        // Define account mappings with type codes and fallbacks
         const accountMappings = {
-            cash: { name: 'Cash', code: '1000', typeCode: 'ASSET' },
-            accountsReceivable: { name: 'Accounts Receivable', code: '1100', typeCode: 'ASSET' },
-            revenue: { name: 'Sales Revenue', code: '4000', typeCode: 'REVENUE' },
-            cogs: { name: 'Cost of Goods Sold', code: '5000', typeCode: 'EXPENSE' },
-            inventory: { name: 'Inventory', code: '1200', typeCode: 'ASSET' },
-            taxPayable: { name: 'Tax Payable', code: '2100', typeCode: 'LIABILITY' },
-            discounts: { name: 'Sales Discounts', code: '5001', typeCode: 'EXPENSE' }
+            cash: {
+                name: 'Cash',
+                code: '1000',
+                typeCode: 'ASSET',
+                fallbackNames: ['Cash', 'Bank - Checking Account', 'Bank - Savings Account'],
+                fallbackCodes: ['1000', '1010', '1020']
+            },
+            accountsReceivable: {
+                name: 'Accounts Receivable',
+                code: '1100',
+                typeCode: 'ASSET',
+                fallbackNames: ['Accounts Receivable'],
+                fallbackCodes: ['1100']
+            },
+            revenue: {
+                name: 'Sales Revenue',
+                code: '4000',
+                typeCode: 'REVENUE',
+                fallbackNames: ['Sales Revenue', 'Service Revenue'],
+                fallbackCodes: ['4000', '4100']
+            },
+            cogs: {
+                name: 'Cost of Goods Sold',
+                code: '5000',
+                typeCode: 'EXPENSE',
+                fallbackNames: ['Cost of Goods Sold'],
+                fallbackCodes: ['5000']
+            },
+            inventory: {
+                name: 'Inventory',
+                code: '1200',
+                typeCode: 'ASSET',
+                fallbackNames: ['Inventory'],
+                fallbackCodes: ['1200']
+            },
+            taxPayable: {
+                name: 'Tax Payable',
+                code: '2100',
+                typeCode: 'LIABILITY',
+                fallbackNames: ['Tax Payable', 'Taxes Payable', 'Accrued Expenses'],
+                fallbackCodes: ['2100', '2300']
+            },
+            discounts: {
+                name: 'Sales Discounts',
+                code: '5001',
+                typeCode: 'EXPENSE',
+                fallbackNames: ['Sales Discounts', 'Discounts'],
+                fallbackCodes: ['5001', '5002']
+            }
         };
         const accounts = {};
         for (const [key, mapping] of Object.entries(accountMappings)) {
-            // First, get or create the account type
-            let accountType = await database.accountType.findFirst({
-                where: {
-                    tenantId,
-                    companyId,
-                    code: mapping.typeCode
-                }
-            });
-            if (!accountType) {
-                accountType = await database.accountType.create({
-                    data: {
+            try {
+                // First, get or create the account type
+                let accountType = await database.accountType.findFirst({
+                    where: {
                         tenantId,
                         companyId,
-                        code: mapping.typeCode,
-                        name: mapping.typeCode.charAt(0) + mapping.typeCode.slice(1).toLowerCase()
+                        code: mapping.typeCode
                     }
                 });
-            }
-            // Then, get or create the account
-            let account = await database.account.findFirst({
-                where: {
-                    tenantId,
-                    companyId,
-                    OR: [
-                        { name: mapping.name },
-                        { code: mapping.code }
-                    ]
-                }
-            });
-            if (!account) {
-                account = await database.account.create({
-                    data: {
-                        tenantId,
-                        name: mapping.name,
-                        code: mapping.code,
-                        type: {
-                            connect: { id: accountType.id }
-                        },
-                        company: {
-                            connect: { id: companyId }
+                if (!accountType) {
+                    accountType = await database.accountType.create({
+                        data: {
+                            tenantId,
+                            companyId,
+                            code: mapping.typeCode,
+                            name: mapping.typeCode.charAt(0) + mapping.typeCode.slice(1).toLowerCase()
                         }
+                    });
+                }
+                // Then, get or create the account with fallbacks
+                let account = await database.account.findFirst({
+                    where: {
+                        tenantId,
+                        companyId,
+                        OR: [
+                            { name: mapping.name },
+                            { code: mapping.code },
+                            // Try fallback names and codes
+                            ...(mapping.fallbackNames?.map(name => ({ name })) || []),
+                            ...(mapping.fallbackCodes?.map(code => ({ code })) || [])
+                        ]
                     }
                 });
+                if (!account) {
+                    // If no account found, create it
+                    account = await database.account.create({
+                        data: {
+                            tenantId,
+                            name: mapping.name,
+                            code: mapping.code,
+                            type: {
+                                connect: { id: accountType.id }
+                            },
+                            company: {
+                                connect: { id: companyId }
+                            }
+                        }
+                    });
+                    console.log(`✅ Created new account: ${mapping.name} (${mapping.code})`);
+                }
+                else {
+                    console.log(`✅ Found existing account: ${account.name} (${account.code})`);
+                }
+                accounts[key] = account;
             }
-            accounts[key] = account;
+            catch (error) {
+                console.error(`Error creating account ${key} (${mapping.name}):`, error);
+                throw new Error(`Failed to create account ${mapping.name}: ${error.message}`);
+            }
         }
+        // Validate that all required accounts are present
+        const missingAccounts = [];
+        for (const [key, account] of Object.entries(accounts)) {
+            if (!account) {
+                missingAccounts.push(key);
+            }
+        }
+        if (missingAccounts.length > 0) {
+            throw new Error(`Missing required accounts: ${missingAccounts.join(', ')}. Please ensure all required accounts exist or can be created.`);
+        }
+        console.log('✅ All required accounts found/created successfully');
         return accounts;
     }
 }
