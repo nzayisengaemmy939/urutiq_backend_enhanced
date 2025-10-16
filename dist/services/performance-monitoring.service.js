@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 export class PerformanceMonitoringService {
     // Log API usage
     static async logApiUsage(tenantId, metrics, userId, companyId, apiKeyId) {

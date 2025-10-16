@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { CustomReportBuilderService, ReportTemplate, ReportSchedule } from './services/custom-report-builder.service';
+import { CustomReportBuilderService, ReportTemplate, ReportSchedule } from './services/custom-report-builder.service.js';
 import { authMiddleware, requireRoles } from './auth.js';
-import { asyncHandler, ApiError } from './errors';
-import { TenantRequest } from './tenant';
+import { asyncHandler, ApiError } from './errors.js';
+import { TenantRequest } from './tenant.js';
 import { z } from 'zod';
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 
 const router = Router();
 

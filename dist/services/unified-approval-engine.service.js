@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 // ==================== UNIFIED APPROVAL ENGINE ====================
 export class UnifiedApprovalEngine {
     // ==================== WORKFLOW MANAGEMENT ====================

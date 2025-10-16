@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 import { aiConfigurationService } from './ai-config.js';
 import { config } from './config.js';
 

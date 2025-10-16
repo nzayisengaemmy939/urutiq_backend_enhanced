@@ -1,6 +1,6 @@
-import { prisma } from './prisma';
-import { validateBody, schemas } from './validate';
-import { ApiError } from './errors';
+import { prisma } from './prisma.js';
+import { validateBody, schemas } from './validate.js';
+import { ApiError } from './errors.js';
 function sum(values) { return values.reduce((a, b) => a + b, 0); }
 export function mountJournalRoutes(router) {
     // Get all journal entries

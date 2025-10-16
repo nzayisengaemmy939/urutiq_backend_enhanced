@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { purchaseOrderPDFService } from './services/purchase-order-pdf.service';
-import { validateRequest } from './middleware/validation.middleware';
+import { purchaseOrderPDFService } from './services/purchase-order-pdf.service.js';
+import { validateRequest } from './middleware/validation.middleware.js';
 import { z } from 'zod';
-import { asyncHandler } from './errors';
+import { asyncHandler } from './errors.js';
 import { authMiddleware, requireRoles } from './auth.js';
 import nodemailer from 'nodemailer';
 import path from 'path';

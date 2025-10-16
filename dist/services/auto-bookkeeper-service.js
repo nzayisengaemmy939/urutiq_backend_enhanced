@@ -1,7 +1,7 @@
-import { prisma } from '../prisma';
-import { EnhancedConversationalAIService } from './enhanced-conversational-ai';
-import { EnhancedTransactionProcessingService } from './enhanced-transaction-processing';
-import { EnhancedJournalManagementService } from './enhanced-journal-management';
+import { prisma } from '../prisma.js';
+import { EnhancedConversationalAIService } from './enhanced-conversational-ai.js';
+import { EnhancedTransactionProcessingService } from './enhanced-transaction-processing.js';
+import { EnhancedJournalManagementService } from './enhanced-journal-management.js';
 import { Decimal } from '@prisma/client/runtime/library';
 // Auto-Bookkeeper Service
 export class AutoBookkeeperService {

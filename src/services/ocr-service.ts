@@ -1,4 +1,4 @@
-import { AIService } from './ai-service';
+import { AIService } from './ai-service.js';
 
 export interface OCRResult {
   text: string;

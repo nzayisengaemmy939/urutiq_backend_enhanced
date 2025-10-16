@@ -1,4 +1,4 @@
-import { enqueueAiJob } from './queue';
+import { enqueueAiJob } from './queue.js';
 
 // WEBHOOK_URLS env expected as comma-separated list of URLs
 export function enqueueWebhooks(eventName: string, payload: any) {

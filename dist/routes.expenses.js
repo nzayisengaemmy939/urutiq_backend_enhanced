@@ -1,7 +1,7 @@
-import { prisma } from './prisma';
-import { validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { validateBody } from './validate.js';
 import { z } from 'zod';
-import { expenseJournalIntegration } from './services/expense-journal-integration';
+import { expenseJournalIntegration } from './services/expense-journal-integration.js';
 // Validation schemas
 const expenseSchemas = {
     category: z.object({

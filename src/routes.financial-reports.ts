@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { FinancialReportingService, FinancialReportParams } from './services/financial-reporting.service';
+import { FinancialReportingService, FinancialReportParams } from './services/financial-reporting.service.js';
 import { authMiddleware, requireRoles } from './auth.js';
-import { asyncHandler, ApiError } from './errors';
-import { TenantRequest } from './tenant';
+import { asyncHandler, ApiError } from './errors.js';
+import { TenantRequest } from './tenant.js';
 import { z } from 'zod';
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 
 const router = Router();
 

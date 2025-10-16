@@ -1,6 +1,6 @@
 import { Worker } from 'bullmq';
-import { prisma } from './prisma';
-import { localFilePath } from './storage';
+import { prisma } from './prisma.js';
+import { localFilePath } from './storage.js';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -9,7 +9,7 @@ export async function startAiWorker() {
   console.log('🤖 Starting AI Worker...');
   
   try {
-    const { aiQueue } = await import('./queue');
+    const { aiQueue } = await import('./queue.js');
     
     // Document Analysis Worker
     const documentAnalysisWorker = new Worker('document-analysis', async (job) => {

@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
     apiVersion: '2023-10-16',

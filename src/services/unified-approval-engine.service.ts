@@ -1,5 +1,5 @@
-import { prisma } from '../prisma';
-import { emailNotificationService } from './email-notification.service';
+import { prisma } from '../prisma.js';
+import { emailNotificationService } from './email-notification.service.js';
 
 // ==================== TYPES & INTERFACES ====================
 

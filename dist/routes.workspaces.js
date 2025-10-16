@@ -1,8 +1,8 @@
-import { prisma } from './prisma';
-import { authMiddleware } from './auth';
-import { validateBody } from './validate';
-import { workspaceSchemas, fileSchemas, notificationSchemas } from './validate';
-import { createMulter, computeSha256 } from './storage';
+import { prisma } from './prisma.js';
+import { authMiddleware } from './auth.js';
+import { validateBody } from './validate.js';
+import { workspaceSchemas, fileSchemas, notificationSchemas } from './validate.js';
+import { createMulter, computeSha256 } from './storage.js';
 import path from 'node:path';
 import fs from 'node:fs';
 const requireAuth = authMiddleware(process.env.JWT_SECRET || 'dev-secret');

@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { addInsight, logAnomaly, addAudit } from './ai';
+import { prisma } from './prisma.js';
+import { addInsight, logAnomaly, addAudit } from './ai.js';
 import { aiConfigurationService, DEFAULT_BEHAVIOR_CONFIG } from './ai-config.js';
 // Ollama API configuration
 import { config } from './config.js';

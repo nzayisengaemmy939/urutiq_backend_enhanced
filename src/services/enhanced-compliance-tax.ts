@@ -1,5 +1,5 @@
-import { prisma } from '../prisma';
-import { EnhancedConversationalAIService } from './enhanced-conversational-ai';
+import { prisma } from '../prisma.js';
+import { EnhancedConversationalAIService } from './enhanced-conversational-ai.js';
 
 // Enhanced Compliance & Tax Interfaces
 export interface TaxCalculationRequest {

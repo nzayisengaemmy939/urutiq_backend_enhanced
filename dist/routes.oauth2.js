@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { oauth2Routes, OAUTH_SCOPES } from './auth/oauth2';
-import { ApiKeyService } from './services/api-key.service';
-import { PerformanceMonitoringService } from './services/performance-monitoring.service';
-import { prisma } from './prisma';
-import { authMiddleware, requireRoles } from './auth';
-import { asyncHandler, ApiError } from './errors';
+import { oauth2Routes, OAUTH_SCOPES } from './auth/oauth2.js';
+import { ApiKeyService } from './services/api-key.service.js';
+import { PerformanceMonitoringService } from './services/performance-monitoring.service.js';
+import { prisma } from './prisma.js';
+import { authMiddleware, requireRoles } from './auth.js';
+import { asyncHandler, ApiError } from './errors.js';
 import { z } from 'zod';
 const router = Router();
 // OAuth 2.1 Routes

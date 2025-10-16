@@ -1,6 +1,6 @@
-import { prisma } from './prisma';
-import { periodCloseService } from './services/period-close.service';
-import { validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { periodCloseService } from './services/period-close.service.js';
+import { validateBody } from './validate.js';
 import { z } from 'zod';
 const transactionCreateSchema = z.object({
     transactionType: z.string().min(1),

@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { requireRoles } from './auth';
+import { prisma } from './prisma.js';
+import { requireRoles } from './auth.js';
 export function mountJournalHubRoutes(router) {
     console.log('🔍 mountJournalHubRoutes called - setting up routes');
     // Get all journal entries (matching the frontend API expectations)

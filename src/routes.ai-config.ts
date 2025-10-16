@@ -1,7 +1,7 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { asyncHandler } from './errors';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { asyncHandler } from './errors.js';
 import type { Response } from 'express';
 import { 
   aiConfigurationService, 

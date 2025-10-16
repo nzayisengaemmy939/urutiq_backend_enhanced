@@ -1,5 +1,5 @@
-import { prisma } from '../prisma';
-import { updateAccountBalances } from './account-balance';
+import { prisma } from '../prisma.js';
+import { updateAccountBalances } from './account-balance.js';
 
 /**
  * Complete post-payment processing workflow

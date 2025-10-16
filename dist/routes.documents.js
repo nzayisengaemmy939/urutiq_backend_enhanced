@@ -1,7 +1,7 @@
-import { prisma } from './prisma';
-import { validateBody, schemas } from './validate';
-import { ApiError } from './errors';
-import { createMulter } from './storage';
+import { prisma } from './prisma.js';
+import { validateBody, schemas } from './validate.js';
+import { ApiError } from './errors.js';
+import { createMulter } from './storage.js';
 import mongoService from './config/mongodb.js';
 import * as fs from 'node:fs';
 // Helper function to safely get user ID

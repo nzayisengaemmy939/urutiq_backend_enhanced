@@ -1,5 +1,5 @@
-import { asyncHandler } from './errors';
-import { prisma } from './prisma';
+import { asyncHandler } from './errors.js';
+import { prisma } from './prisma.js';
 export function mountCardRoutes(router) {
     // Bulk import card transactions
     router.post('/card-transactions/import', asyncHandler(async (req, res) => {

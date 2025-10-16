@@ -1,9 +1,9 @@
 import type { Router, Request, Response } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { validateBody, schemas } from './validate';
-import { ApiError } from './errors';
-import { createMulter, localFilePath } from './storage';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { validateBody, schemas } from './validate.js';
+import { ApiError } from './errors.js';
+import { createMulter, localFilePath } from './storage.js';
 import mongoService from './config/mongodb.js';
 import * as path from 'node:path';
 import * as fs from 'node:fs';

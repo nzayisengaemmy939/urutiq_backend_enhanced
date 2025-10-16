@@ -1,6 +1,6 @@
-import { prisma } from './prisma';
-import { asyncHandler } from './errors';
-import { enhancedAIService } from './ai-enhanced';
+import { prisma } from './prisma.js';
+import { asyncHandler } from './errors.js';
+import { enhancedAIService } from './ai-enhanced.js';
 import { config } from './config.js';
 export function mountEnhancedAIRoutes(router) {
     // 1. Transaction Categorization (AI Bookkeeping)

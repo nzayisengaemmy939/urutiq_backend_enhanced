@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { MFAService } from './services/mfa.service';
+import { MFAService } from './services/mfa.service.js';
 import { authMiddleware, requireRoles } from './auth.js';
-import { asyncHandler, ApiError } from './errors';
+import { asyncHandler, ApiError } from './errors.js';
 import { z } from 'zod';
 const router = Router();
 // Validation schemas

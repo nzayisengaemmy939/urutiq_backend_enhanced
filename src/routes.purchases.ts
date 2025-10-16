@@ -1,12 +1,12 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { validateBody, schemas } from './validate';
-import { prisma as db } from './prisma';
-import { getAccountByPurpose } from './accounts';
-import { logAnomaly, addAudit } from './ai';
-import { enqueueAiJob } from './queue';
-import { enqueueWebhooks } from './webhooks';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { validateBody, schemas } from './validate.js';
+import { prisma as db } from './prisma.js';
+import { getAccountByPurpose } from './accounts.js';
+import { logAnomaly, addAudit } from './ai.js';
+import { enqueueAiJob } from './queue.js';
+import { enqueueWebhooks } from './webhooks.js';
 
 function calcLineTotal(qty: number, price: number, taxRate: number) {
   const base = qty * price;

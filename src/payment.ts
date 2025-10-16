@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {

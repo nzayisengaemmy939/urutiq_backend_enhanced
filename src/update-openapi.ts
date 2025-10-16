@@ -7,8 +7,8 @@
  * Usage: ts-node src/update-openapi.ts
  */
 
-import { newPaths, newSchemas } from './openapi-extensions';
-import { buildOpenApi } from './openapi';
+import { newPaths, newSchemas } from './openapi-extensions.js';
+import { buildOpenApi } from './openapi.js';
 import * as fs from 'fs';
 import * as path from 'path';
 

@@ -1,9 +1,9 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { asyncHandler } from './errors';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { asyncHandler } from './errors.js';
 import type { Response } from 'express';
-import { enhancedAIService } from './ai-enhanced';
+import { enhancedAIService } from './ai-enhanced.js';
 import { config } from './config.js';
 
 export function mountEnhancedAIRoutes(router: Router) {

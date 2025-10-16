@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { enqueueAiJob } from './queue';
+import { prisma } from './prisma.js';
+import { enqueueAiJob } from './queue.js';
 export class InvoiceOCRService {
     /**
      * Process uploaded invoice image/document

@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 import { Request, Response, NextFunction } from 'express';
 
 export interface PerformanceMetrics {

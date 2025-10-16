@@ -1,6 +1,6 @@
-import { prisma } from './prisma'
-import { TenantRequest } from './tenant'
-import { enqueueAiJob } from './queue'
+import { prisma } from './prisma.js'
+import { TenantRequest } from './tenant.js'
+import { enqueueAiJob } from './queue.js'
 
 export interface ChatMessage {
   id: string

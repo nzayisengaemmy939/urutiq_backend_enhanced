@@ -1,7 +1,7 @@
 import { Ollama } from 'ollama';
 import { HfInference } from '@huggingface/inference';
-import { prisma } from '../prisma';
-import { ConversationContext, ConversationMessage, UserPreferences, LearningContext } from './enhanced-conversational-ai';
+import { prisma } from '../prisma.js';
+import { ConversationContext, ConversationMessage, UserPreferences, LearningContext } from './enhanced-conversational-ai.js';
 
 // Enhanced interfaces for Llama-powered AI
 export interface LlamaConversationContext extends ConversationContext {

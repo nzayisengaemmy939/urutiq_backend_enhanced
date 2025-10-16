@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { expenseJournalIntegration } from './expense-journal-integration';
+import { expenseJournalIntegration } from './expense-journal-integration.js';
 
 const prisma = new PrismaClient();
 

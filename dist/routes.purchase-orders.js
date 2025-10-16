@@ -1,9 +1,9 @@
-import { prisma } from './prisma';
-import { validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { validateBody } from './validate.js';
 import { z } from 'zod';
-import { purchaseOrderPDFService } from './services/purchase-order-pdf.service';
-import { emailService } from './services/email.service';
-import { purchaseOrderDeliveryService } from './services/purchase-order-delivery.service';
+import { purchaseOrderPDFService } from './services/purchase-order-pdf.service.js';
+import { emailService } from './services/email.service.js';
+import { purchaseOrderDeliveryService } from './services/purchase-order-delivery.service.js';
 // Validation schemas
 const purchaseOrderSchemas = {
     create: z.object({

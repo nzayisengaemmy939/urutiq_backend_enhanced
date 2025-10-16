@@ -1,5 +1,5 @@
-import { redisCache } from './redis-cache.service';
-import { prisma } from '../prisma';
+import { redisCache } from './redis-cache.service.js';
+import { prisma } from '../prisma.js';
 
 export interface TrialBalanceCacheData {
   reportType: string;

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { goodReceiptPDFService } from './services/good-receipt-pdf.service';
-import { validateRequest } from './middleware/validation.middleware';
+import { goodReceiptPDFService } from './services/good-receipt-pdf.service.js';
+import { validateRequest } from './middleware/validation.middleware.js';
 import { z } from 'zod';
-import { asyncHandler } from './errors';
+import { asyncHandler } from './errors.js';
 import { authMiddleware, requireRoles } from './auth.js';
 const router = Router();
 // Validation schemas

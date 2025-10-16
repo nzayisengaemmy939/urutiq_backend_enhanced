@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import { purchaseOrderPDFService } from './services/purchase-order-pdf.service';
-import { validateRequest, commonSchemas } from './middleware/validation.middleware';
+import { purchaseOrderPDFService } from './services/purchase-order-pdf.service.js';
+import { validateRequest, commonSchemas } from './middleware/validation.middleware.js';
 import { z } from 'zod';
-import { asyncHandler } from './errors';
+import { asyncHandler } from './errors.js';
 import { authMiddleware, requireRoles } from './auth.js';
-import { TenantRequest } from './tenant';
+import { TenantRequest } from './tenant.js';
 import nodemailer from 'nodemailer';
 import path from 'path';
 import fs from 'fs';
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 
 const router = Router();
 

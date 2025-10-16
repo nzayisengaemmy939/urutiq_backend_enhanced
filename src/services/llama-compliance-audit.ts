@@ -1,7 +1,7 @@
 import { Ollama } from 'ollama';
 import { HfInference } from '@huggingface/inference';
-import { LlamaEnhancedConversationalAI, LlamaConversationContext, llamaEnhancedConversationalAI } from './llama-enhanced-conversational-ai';
-import { prisma } from '../prisma';
+import { LlamaEnhancedConversationalAI, LlamaConversationContext, llamaEnhancedConversationalAI } from './llama-enhanced-conversational-ai.js';
+import { prisma } from '../prisma.js';
 
 export interface ComplianceAnalysisResult {
   success: boolean;

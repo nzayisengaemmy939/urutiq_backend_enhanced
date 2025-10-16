@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ApiError } from './errors';
+import { ApiError } from './errors.js';
 export function validateBody(schema) {
     return function (req, _res, next) {
         const parsed = schema.safeParse(req.body);

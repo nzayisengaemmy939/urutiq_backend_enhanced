@@ -1,6 +1,6 @@
-import { prisma } from '../prisma';
-import { EnhancedConversationalAIService } from './enhanced-conversational-ai';
-import { EnhancedFinancialReportingEngine } from './enhanced-financial-reporting';
+import { prisma } from '../prisma.js';
+import { EnhancedConversationalAIService } from './enhanced-conversational-ai.js';
+import { EnhancedFinancialReportingEngine } from './enhanced-financial-reporting.js';
 // Enhanced Bank Integration Service
 export class EnhancedBankIntegrationService {
     conversationalAI;

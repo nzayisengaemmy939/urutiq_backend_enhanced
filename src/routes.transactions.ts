@@ -1,8 +1,8 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { periodCloseService } from './services/period-close.service';
-import { TenantRequest } from './tenant';
-import { validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { periodCloseService } from './services/period-close.service.js';
+import { TenantRequest } from './tenant.js';
+import { validateBody } from './validate.js';
 import { z } from 'zod';
 
 const transactionCreateSchema = z.object({

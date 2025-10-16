@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 export function mountDashboardRoutes(router) {
     // Get comprehensive dashboard data
     router.get('/dashboard', async (req, res) => {

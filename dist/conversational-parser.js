@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 import { config } from './config.js';
 // Common accounting patterns and keywords
 const ACCOUNTING_PATTERNS = {
