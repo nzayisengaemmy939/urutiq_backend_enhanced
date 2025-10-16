@@ -5,8 +5,10 @@ export const validateRequest = (options) => {
         try {
             // Validate request body
             if (options.body) {
+                console.log('🔧 Validation middleware - validating body:', req.body);
                 const bodyResult = options.body.safeParse(req.body);
                 if (!bodyResult.success) {
+                    console.log('🔧 Validation failed:', bodyResult.error);
                     return res.status(400).json({
                         success: false,
                         error: 'VALIDATION_ERROR',

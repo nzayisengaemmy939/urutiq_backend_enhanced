@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { requireRoles } from '../auth';
+import { requireRoles } from '../auth.js';
 import { TenantRequest } from '../tenant';
 import { asyncHandler, ApiError } from '../errors';
 import tutorialVideoService from '../services/tutorial-video-service';

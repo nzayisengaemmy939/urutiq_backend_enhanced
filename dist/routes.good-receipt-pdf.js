@@ -3,7 +3,7 @@ import { goodReceiptPDFService } from './services/good-receipt-pdf.service';
 import { validateRequest } from './middleware/validation.middleware';
 import { z } from 'zod';
 import { asyncHandler } from './errors';
-import { authMiddleware, requireRoles } from './auth';
+import { authMiddleware, requireRoles } from './auth.js';
 const router = Router();
 // Validation schemas
 const pdfGenerationSchema = z.object({

@@ -3,7 +3,7 @@ import { purchaseOrderPDFService } from './services/purchase-order-pdf.service';
 import { validateRequest, commonSchemas } from './middleware/validation.middleware';
 import { z } from 'zod';
 import { asyncHandler } from './errors';
-import { authMiddleware, requireRoles } from './auth';
+import { authMiddleware, requireRoles } from './auth.js';
 import { TenantRequest } from './tenant';
 import nodemailer from 'nodemailer';
 import path from 'path';

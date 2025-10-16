@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { config } from "./config.js";
-import { authMiddleware, requireRoles, signDemoToken } from "./auth";
+import { authMiddleware, requireRoles, signDemoToken } from "./auth.js";
 import { tenantMiddleware, TenantRequest } from "./tenant";
 import llamaAIRouter from "./routes/llama-ai";
 import { errorHandler } from "./errors";

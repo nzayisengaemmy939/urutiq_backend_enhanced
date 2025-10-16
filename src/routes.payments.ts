@@ -1,6 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
-import { requireRoles } from './auth';
+import { requireRoles } from './auth.js';
 import { TenantRequest } from './types';
 
 const prisma = new PrismaClient();

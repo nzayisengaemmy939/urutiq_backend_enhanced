@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { prisma } from './prisma';
 import { TenantRequest } from './tenant';
 import { validateRequest as validateRequestMiddleware } from './middleware/validation.middleware';
-import { requireRoles } from './auth';
+import { requireRoles } from './auth.js';
 import { getAccountByPurpose } from './accounts';
 import { addAudit } from './ai';
 import { enqueueWebhooks } from './webhooks';
@@ -163,6 +163,13 @@ export function mountAccountsPayableRoutes(router: Router) {
       const data = req.body;
       const tenantId = req.tenantId!;
       const companyId = req.header('x-company-id') || 'demo-company';
+
+      console.log('🔧 AP Invoice Creation Request:', {
+        tenantId,
+        companyId,
+        data,
+        headers: req.headers
+      });
 
       // Check if invoice number already exists
       const existingInvoice = await prisma.invoiceCapture.findFirst({

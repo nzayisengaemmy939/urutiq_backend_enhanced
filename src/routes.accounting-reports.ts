@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { TenantRequest } from './tenant';
-import { authMiddleware, requireRoles } from './auth';
+import { authMiddleware, requireRoles } from './auth.js';
 import { apiKeyAuthMiddleware } from './middleware/api-key-auth';
 import { asyncHandler } from './errors';
 import { redisCache } from './services/redis-cache.service';

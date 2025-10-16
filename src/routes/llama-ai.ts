@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { asyncHandler } from '../errors';
 import type { TenantRequest } from '../tenant';
-import { authMiddleware, requireRoles } from '../auth';
+import { authMiddleware, requireRoles } from '../auth.js';
 import { llamaEnhancedConversationalAI, LlamaConversationContext } from '../services/llama-enhanced-conversational-ai';
 import { llamaDocumentProcessor } from '../services/llama-document-processor';
 import { llamaPredictiveAnalytics } from '../services/llama-predictive-analytics';

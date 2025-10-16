@@ -8,7 +8,7 @@ import crypto from "crypto";
 import fs from "fs";
 import multer from "multer";
 import { config } from "./config.js";
-import { authMiddleware, requireRoles, signDemoToken } from "./auth";
+import { authMiddleware, requireRoles, signDemoToken } from "./auth.js";
 import { prisma } from "./prisma";
 import { tenantMiddleware } from "./tenant";
 import mongoService from "./config/mongodb.js";

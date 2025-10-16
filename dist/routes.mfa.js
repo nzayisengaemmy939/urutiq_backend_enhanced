@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { MFAService } from './services/mfa.service';
-import { authMiddleware, requireRoles } from './auth';
+import { authMiddleware, requireRoles } from './auth.js';
 import { asyncHandler, ApiError } from './errors';
 import { z } from 'zod';
 const router = Router();

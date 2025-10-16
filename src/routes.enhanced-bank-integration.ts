@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { EnhancedBankIntegrationService, BankConnection, CashFlowForecast } from './services/enhanced-bank-integration.service';
-import { authMiddleware, requireRoles } from './auth';
+import { authMiddleware, requireRoles } from './auth.js';
 import { asyncHandler, ApiError } from './errors';
 import { TenantRequest } from './tenant';
 import { z } from 'zod';

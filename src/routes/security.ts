@@ -1,6 +1,6 @@
 import { Router, Response } from 'express';
 import { prisma } from '../prisma';
-import { authMiddleware, requireRoles } from '../auth';
+import { authMiddleware, requireRoles } from '../auth.js';
 import { TenantRequest } from '../tenant';
 import { ApiError, asyncHandler } from '../errors';
 import { validateBody } from '../validate';
