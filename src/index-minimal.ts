@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import { config } from "./config.js";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth.js";
-import { tenantMiddleware, TenantRequest } from "./tenant";
-import llamaAIRouter from "./routes/llama-ai";
-import { errorHandler } from "./errors";
+import { tenantMiddleware, TenantRequest } from "./tenant.js";
+import llamaAIRouter from "./routes/llama-ai.js";
+import { errorHandler } from "./errors.js";
 
 const resolved = config;
 const env = process.env;
