@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 export function mountCategoryRoutes(router) {
     // Get all categories
     router.get('/categories', async (req, res) => {

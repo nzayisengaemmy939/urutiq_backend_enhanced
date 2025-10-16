@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 export function mountAccountingOverviewRoutes(router) {
     // Get accounting overview - aggregates data from multiple sources
     router.get('/overview', async (req, res) => {

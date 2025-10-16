@@ -1,9 +1,9 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { asyncHandler } from './errors';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { asyncHandler } from './errors.js';
 import type { Response, Request } from 'express';
-import { conversationalParser } from './conversational-parser';
+import { conversationalParser } from './conversational-parser.js';
 
 export function mountConversationalParserRoutes(router: Router) {
   // Test endpoint (no auth required)

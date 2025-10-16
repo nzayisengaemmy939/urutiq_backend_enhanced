@@ -1,6 +1,6 @@
-import { prisma } from './prisma';
-import { asyncHandler } from './errors';
-import { authMiddleware } from './auth';
+import { prisma } from './prisma.js';
+import { asyncHandler } from './errors.js';
+import { authMiddleware } from './auth.js';
 export function mountAIInsightsRoutes(router) {
     // Simple test endpoint
     router.get('/ai/insights', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), asyncHandler(async (req, res) => {

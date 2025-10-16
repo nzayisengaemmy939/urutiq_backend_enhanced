@@ -1,8 +1,8 @@
 import express from 'express';
 import { z } from 'zod';
-import { financialReportingService } from '../services/financial-reporting.service';
-import { authMiddleware } from '../middleware/auth';
-import { tenantMiddleware } from '../middleware/tenant';
+import { financialReportingService } from '../services/financial-reporting.service.js';
+import { authMiddleware } from '../middleware/auth.js';
+import { tenantMiddleware } from '../middleware/tenant.js';
 const router = express.Router();
 // Validation schemas
 const periodSchema = z.object({

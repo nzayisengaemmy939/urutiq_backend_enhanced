@@ -1,7 +1,7 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { requireRoles } from './auth';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { requireRoles } from './auth.js';
 
 export function mountJournalHubRoutes(router: Router) {
   console.log('🔍 mountJournalHubRoutes called - setting up routes');

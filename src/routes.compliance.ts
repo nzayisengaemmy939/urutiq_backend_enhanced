@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { prisma } from './prisma';
-import { authMiddleware } from './auth';
-import { validateBody } from './validate';
-import { complianceSchemas } from './validate';
-import type { TenantRequest } from './tenant';
+import { prisma } from './prisma.js';
+import { authMiddleware } from './auth.js';
+import { validateBody } from './validate.js';
+import { complianceSchemas } from './validate.js';
+import type { TenantRequest } from './tenant.js';
 const requireAuth = authMiddleware(process.env.JWT_SECRET || 'dev-secret');
 
 export function mountComplianceRoutes(router: Router) {

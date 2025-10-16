@@ -1,6 +1,6 @@
-import { prisma } from './prisma';
-import { asyncHandler } from './errors';
-import { conversationalParser } from './conversational-parser';
+import { prisma } from './prisma.js';
+import { asyncHandler } from './errors.js';
+import { conversationalParser } from './conversational-parser.js';
 export function mountConversationalParserRoutes(router) {
     // Test endpoint (no auth required)
     router.post('/parser/test', asyncHandler(async (req, res) => {

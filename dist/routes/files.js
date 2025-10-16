@@ -1,10 +1,10 @@
 import express from 'express';
 import multer from 'multer';
-import { requireRoles } from '../middleware/auth';
+import { requireRoles } from '../middleware/auth.js';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-import { asyncHandler, ApiError } from '../errors';
-import fileStorageService from '../services/file-storage-service';
+import { asyncHandler, ApiError } from '../errors.js';
+import fileStorageService from '../services/file-storage-service.js';
 const router = express.Router();
 // Configure multer for file uploads
 const upload = multer({

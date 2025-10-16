@@ -1,7 +1,7 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import { asyncHandler } from '../errors';
-import { creditNotesService } from '../services/credit-notes.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { asyncHandler } from '../errors.js';
+import { creditNotesService } from '../services/credit-notes.service.js';
 const router = express.Router();
 // Get all credit notes for a company
 router.get('/credit-notes/:companyId', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), requireRoles(['admin', 'accountant']), asyncHandler(async (req, res) => {

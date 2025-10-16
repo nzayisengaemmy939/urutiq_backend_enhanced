@@ -1,4 +1,4 @@
-import { validateBody } from '../validate';
+import { validateBody } from '../validate.js';
 import { z } from 'zod';
 import nodemailer from 'nodemailer';
 import multer from 'multer';

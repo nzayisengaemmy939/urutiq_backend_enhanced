@@ -1,7 +1,7 @@
-import { prisma } from './prisma';
-import { validateBody, schemas } from './validate';
-import { ApiError, asyncHandler } from './errors';
-import { authMiddleware, requireRoles } from './auth';
+import { prisma } from './prisma.js';
+import { validateBody, schemas } from './validate.js';
+import { ApiError, asyncHandler } from './errors.js';
+import { authMiddleware, requireRoles } from './auth.js';
 const AUTH_SECRET = process.env.JWT_SECRET || 'dev-secret';
 // --- Helper functions for validation and reuse ---
 async function getCompanyOrThrow(tenantId, companyId) {

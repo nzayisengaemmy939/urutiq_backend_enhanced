@@ -1,6 +1,6 @@
 import * as express from 'express';
-import { enhancedBankIntegrationService } from '../services/enhanced-bank-integration';
-import { prisma } from '../prisma';
+import { enhancedBankIntegrationService } from '../services/enhanced-bank-integration.js';
+import { prisma } from '../prisma.js';
 const router = express.Router();
 // Helper function for async error handling
 const asyncHandler = (fn) => (req, res, next) => {

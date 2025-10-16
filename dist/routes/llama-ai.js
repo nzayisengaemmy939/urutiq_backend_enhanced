@@ -1,11 +1,11 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
+import { asyncHandler } from '../errors.js';
 import { authMiddleware, requireRoles } from '../auth.js';
-import { llamaEnhancedConversationalAI } from '../services/llama-enhanced-conversational-ai';
-import { llamaDocumentProcessor } from '../services/llama-document-processor';
-import { llamaPredictiveAnalytics } from '../services/llama-predictive-analytics';
-import { llamaComplianceAudit } from '../services/llama-compliance-audit';
-import { prisma } from '../prisma';
+import { llamaEnhancedConversationalAI } from '../services/llama-enhanced-conversational-ai.js';
+import { llamaDocumentProcessor } from '../services/llama-document-processor.js';
+import { llamaPredictiveAnalytics } from '../services/llama-predictive-analytics.js';
+import { llamaComplianceAudit } from '../services/llama-compliance-audit.js';
+import { prisma } from '../prisma.js';
 const router = express.Router();
 // Health check endpoint
 router.get('/health', (req, res) => {

@@ -1,7 +1,7 @@
-import { prisma } from './prisma';
-import { authMiddleware } from './auth';
-import { validateBody } from './validate';
-import { complianceSchemas } from './validate';
+import { prisma } from './prisma.js';
+import { authMiddleware } from './auth.js';
+import { validateBody } from './validate.js';
+import { complianceSchemas } from './validate.js';
 const requireAuth = authMiddleware(process.env.JWT_SECRET || 'dev-secret');
 export function mountComplianceRoutes(router) {
     // Tax Rates

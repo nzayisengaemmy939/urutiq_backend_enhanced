@@ -1,7 +1,7 @@
-import { prisma } from '../prisma';
-import { validateBody, journalEntryTypeCreate, journalEntryCreate, journalEntryReversal, journalEntryAdjustment, journalEntryApprovalRequest, journalEntryBatchCreate, journalEntryBatchApprove, journalEntryBatchPost, journalEntryBatchReverse, journalEntryCsvImport, journalSearchSave, journalSearchUpdate } from '../validate';
-import { emailNotificationService } from '../services/email-notification.service';
-import { pdfGenerationService } from '../services/pdf-generation.service';
+import { prisma } from '../prisma.js';
+import { validateBody, journalEntryTypeCreate, journalEntryCreate, journalEntryReversal, journalEntryAdjustment, journalEntryApprovalRequest, journalEntryBatchCreate, journalEntryBatchApprove, journalEntryBatchPost, journalEntryBatchReverse, journalEntryCsvImport, journalSearchSave, journalSearchUpdate } from '../validate.js';
+import { emailNotificationService } from '../services/email-notification.service.js';
+import { pdfGenerationService } from '../services/pdf-generation.service.js';
 export function mountJournalHubRoutes(router) {
     // ==================== JOURNAL ENTRY TYPES ====================
     // Get all journal entry types

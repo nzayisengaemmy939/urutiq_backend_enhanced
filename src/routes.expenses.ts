@@ -1,11 +1,11 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { validateBody } from './validate.js';
 import { z } from 'zod';
-import { expenseJournalIntegration } from './services/expense-journal-integration';
-import { validateRequest, commonSchemas } from './middleware/validation.middleware';
-import { expenseSchema, expenseCategorySchema, budgetSchema, expenseRuleSchema } from './validation/schemas';
+import { expenseJournalIntegration } from './services/expense-journal-integration.js';
+import { validateRequest, commonSchemas } from './middleware/validation.middleware.js';
+import { expenseSchema, expenseCategorySchema, budgetSchema, expenseRuleSchema } from './validation/schemas.js';
 
 // Validation schemas
 const expenseSchemas = {

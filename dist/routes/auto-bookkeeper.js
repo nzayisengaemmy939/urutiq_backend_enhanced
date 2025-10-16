@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
-import { autoBookkeeperService } from '../services/auto-bookkeeper-service';
-import { prisma } from '../prisma';
+import { asyncHandler } from '../errors.js';
+import { autoBookkeeperService } from '../services/auto-bookkeeper-service.js';
+import { prisma } from '../prisma.js';
 const router = express.Router();
 // Get Auto-Bookkeeper configuration
 router.get('/config/:companyId', asyncHandler(async (req, res) => {

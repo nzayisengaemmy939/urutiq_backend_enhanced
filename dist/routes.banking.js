@@ -1,16 +1,16 @@
-import { prisma } from './prisma';
-import { bankingSchemas, validateBody } from './validate';
-import { getAccountByPurpose } from './accounts';
-import { enqueueAiJob } from './queue';
-import { BankIntegrationService } from './services/bank-integration-service';
-import { AICategorizationService } from './services/ai-categorization-service';
-import { SmartReconciliationService } from './services/smart-reconciliation-service';
-import { CurrencyService } from './services/currency-service';
-import { PaymentProcessorService } from './services/payment-processor-service';
-import { AdvancedAnalyticsService } from './services/advanced-analytics-service';
-import { BankConnectionService } from './services/bank-connection-service';
-import { MobileBankingService } from './services/mobile-banking-service';
-import { MobileMoneyService } from './services/mobile-money-service';
+import { prisma } from './prisma.js';
+import { bankingSchemas, validateBody } from './validate.js';
+import { getAccountByPurpose } from './accounts.js';
+import { enqueueAiJob } from './queue.js';
+import { BankIntegrationService } from './services/bank-integration-service.js';
+import { AICategorizationService } from './services/ai-categorization-service.js';
+import { SmartReconciliationService } from './services/smart-reconciliation-service.js';
+import { CurrencyService } from './services/currency-service.js';
+import { PaymentProcessorService } from './services/payment-processor-service.js';
+import { AdvancedAnalyticsService } from './services/advanced-analytics-service.js';
+import { BankConnectionService } from './services/bank-connection-service.js';
+import { MobileBankingService } from './services/mobile-banking-service.js';
+import { MobileMoneyService } from './services/mobile-money-service.js';
 export function mountBankingRoutes(router) {
     // Bank accounts
     router.get('/bank-accounts', async (req, res) => {

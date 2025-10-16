@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware, requireRoles } from './auth.js';
-import { asyncHandler } from './errors';
-import { cacheStrategies } from './middleware/cache.middleware';
+import { asyncHandler } from './errors.js';
+import { cacheStrategies } from './middleware/cache.middleware.js';
 const router = Router();
 const prisma = new PrismaClient();
 // Test endpoint

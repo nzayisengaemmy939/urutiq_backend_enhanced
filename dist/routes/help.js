@@ -1,8 +1,8 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
-import { authMiddleware, requireRoles } from '../auth';
-import { prisma } from '../prisma';
-import { ApiError } from '../errors';
+import { asyncHandler } from '../errors.js';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { prisma } from '../prisma.js';
+import { ApiError } from '../errors.js';
 const router = express.Router();
 // Apply auth middleware to all routes
 router.use(authMiddleware(process.env.JWT_SECRET || 'dev-secret'));

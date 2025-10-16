@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { asyncHandler } from './errors';
-import { prisma } from './prisma';
+import { asyncHandler } from './errors.js';
+import { prisma } from './prisma.js';
 const router = Router();
 // Create a new client
 router.post('/', asyncHandler(async (req, res) => {

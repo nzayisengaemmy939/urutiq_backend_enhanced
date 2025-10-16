@@ -1,8 +1,8 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { validateBody, schemas } from './validate';
-import { ApiError } from './errors';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { validateBody, schemas } from './validate.js';
+import { ApiError } from './errors.js';
 
 function sum(values: number[]) { return values.reduce((a, b) => a + b, 0); }
 

@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { goodReceiptPDFService } from './services/good-receipt-pdf.service';
-import { validateRequest, commonSchemas } from './middleware/validation.middleware';
+import { goodReceiptPDFService } from './services/good-receipt-pdf.service.js';
+import { validateRequest, commonSchemas } from './middleware/validation.middleware.js';
 import { z } from 'zod';
-import { asyncHandler } from './errors';
+import { asyncHandler } from './errors.js';
 import { authMiddleware, requireRoles } from './auth.js';
-import { TenantRequest } from './tenant';
-import { prisma } from './prisma';
+import { TenantRequest } from './tenant.js';
+import { prisma } from './prisma.js';
 
 const router = Router();
 
