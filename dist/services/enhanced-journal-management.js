@@ -1,5 +1,6 @@
-import { prisma } from '../prisma';
-import { EnhancedConversationalAIService } from './enhanced-conversational-ai';
+import { prisma } from '../prisma.js';
+import { EnhancedConversationalAIService } from './enhanced-conversational-ai.js';
+import { Decimal } from '@prisma/client/runtime/library';
 // Enhanced Journal Management Service
 export class EnhancedJournalManagementService {
     conversationalAI;
@@ -42,7 +43,7 @@ export class EnhancedJournalManagementService {
         }
         // 📦 Update inventory for purchase transactions
         if (request.description && this.isPurchaseTransaction(request.description)) {
-            await this.updateInventoryFromJournalEntry(request.description, balancedEntries.reduce((sum, entry) => sum + entry.debit, 0), request.companyId, request.tenantId || 'tenant_demo');
+            await this.updateInventoryFromJournalEntry(request.description, balancedEntries.reduce((sum, entry) => sum + entry.debit.toNumber(), 0), request.companyId, request.tenantId || 'tenant_demo');
         }
         // Note: Ledger balance updates would be implemented when LedgerEntry model is added to schema
         return {
@@ -93,14 +94,14 @@ export class EnhancedJournalManagementService {
                     const cashAccountId = await this.getAccountIdFromName(cashAccount.accountName, companyId, tenantId);
                     entries.push({
                         accountId: expenseAccountId,
-                        debit: amount,
-                        credit: 0,
+                        debit: new Decimal(amount),
+                        credit: new Decimal(0),
                         description: `${description} - ${expenseAccount.accountName}`
                     });
                     entries.push({
                         accountId: cashAccountId,
-                        debit: 0,
-                        credit: amount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(amount),
                         description: `${description} - ${cashAccount.accountName}`
                     });
                 }
@@ -112,14 +113,14 @@ export class EnhancedJournalManagementService {
                     const cashAccountId = await this.getAccountIdFromName(cashAccount.accountName, companyId, tenantId);
                     entries.push({
                         accountId: cashAccountId,
-                        debit: amount,
-                        credit: 0,
+                        debit: new Decimal(amount),
+                        credit: new Decimal(0),
                         description: `${description} - ${cashAccount.accountName}`
                     });
                     entries.push({
                         accountId: revenueAccountId,
-                        debit: 0,
-                        credit: amount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(amount),
                         description: `${description} - ${revenueAccount.accountName}`
                     });
                 }
@@ -131,14 +132,14 @@ export class EnhancedJournalManagementService {
                     const creditAccountId = await this.getAccountIdFromName(creditAccount.accountName, companyId, tenantId);
                     entries.push({
                         accountId: debitAccountId,
-                        debit: amount,
-                        credit: 0,
+                        debit: new Decimal(amount),
+                        credit: new Decimal(0),
                         description: `${description} - ${debitAccount.accountName}`
                     });
                     entries.push({
                         accountId: creditAccountId,
-                        debit: 0,
-                        credit: amount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(amount),
                         description: `${description} - ${creditAccount.accountName}`
                     });
                 }
@@ -160,14 +161,14 @@ export class EnhancedJournalManagementService {
                     const cashAccountId = await this.getAccountIdFromName('Cash', companyId, tenantId);
                     entries.push({
                         accountId: selectedAccountId,
-                        debit: amount,
-                        credit: 0,
+                        debit: new Decimal(amount),
+                        credit: new Decimal(0),
                         description: `${description} - ${selectedAccount.accountName} (User Selected)`
                     });
                     entries.push({
                         accountId: cashAccountId,
-                        debit: 0,
-                        credit: amount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(amount),
                         description: `${description} - Cash`
                     });
                 }
@@ -176,14 +177,14 @@ export class EnhancedJournalManagementService {
                     const cashAccountId = await this.getAccountIdFromName('Cash', companyId, tenantId);
                     entries.push({
                         accountId: cashAccountId,
-                        debit: amount,
-                        credit: 0,
+                        debit: new Decimal(amount),
+                        credit: new Decimal(0),
                         description: `${description} - Cash`
                     });
                     entries.push({
                         accountId: selectedAccountId,
-                        debit: 0,
-                        credit: amount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(amount),
                         description: `${description} - ${selectedAccount.accountName} (User Selected)`
                     });
                 }
@@ -196,14 +197,14 @@ export class EnhancedJournalManagementService {
                         const expenseAccountId = await this.getAccountIdFromName('General Expense', companyId, tenantId);
                         entries.push({
                             accountId: expenseAccountId,
-                            debit: amount,
-                            credit: 0,
+                            debit: new Decimal(amount),
+                            credit: new Decimal(0),
                             description: `${description} - General Expense`
                         });
                         entries.push({
                             accountId: selectedAccountId,
-                            debit: 0,
-                            credit: amount,
+                            debit: new Decimal(0),
+                            credit: new Decimal(amount),
                             description: `${description} - ${selectedAccount.accountName} (User Selected)`
                         });
                     }
@@ -212,14 +213,14 @@ export class EnhancedJournalManagementService {
                         const revenueAccountId = await this.getAccountIdFromName('General Revenue', companyId, tenantId);
                         entries.push({
                             accountId: selectedAccountId,
-                            debit: amount,
-                            credit: 0,
+                            debit: new Decimal(amount),
+                            credit: new Decimal(0),
                             description: `${description} - ${selectedAccount.accountName} (User Selected)`
                         });
                         entries.push({
                             accountId: revenueAccountId,
-                            debit: 0,
-                            credit: amount,
+                            debit: new Decimal(0),
+                            credit: new Decimal(amount),
                             description: `${description} - General Revenue`
                         });
                     }
@@ -229,14 +230,14 @@ export class EnhancedJournalManagementService {
                     const cashAccountId = await this.getAccountIdFromName('Cash', companyId, tenantId);
                     entries.push({
                         accountId: selectedAccountId,
-                        debit: amount,
-                        credit: 0,
+                        debit: new Decimal(amount),
+                        credit: new Decimal(0),
                         description: `${description} - ${selectedAccount.accountName} (User Selected)`
                     });
                     entries.push({
                         accountId: cashAccountId,
-                        debit: 0,
-                        credit: amount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(amount),
                         description: `${description} - Cash`
                     });
                 }
@@ -414,14 +415,14 @@ export class EnhancedJournalManagementService {
             const paymentAccountId = await this.getAccountIdFromName(paymentAccount, companyId, tenantId);
             entries.push({
                 accountId: paymentAccountId,
-                debit: finalAmount,
-                credit: 0,
+                debit: new Decimal(finalAmount),
+                credit: new Decimal(0),
                 description: `Payment for: ${description}`
             });
             entries.push({
                 accountId: inventoryAccountId,
-                debit: 0,
-                credit: finalAmount,
+                debit: new Decimal(0),
+                credit: new Decimal(finalAmount),
                 description: `Inventory purchase: ${description}`
             });
         }
@@ -431,14 +432,14 @@ export class EnhancedJournalManagementService {
             const revenueAccountId = await this.getAccountIdFromName('Revenue', companyId, tenantId);
             entries.push({
                 accountId: paymentAccountId,
-                debit: finalAmount,
-                credit: 0,
+                debit: new Decimal(finalAmount),
+                credit: new Decimal(0),
                 description: `Payment received: ${description}`
             });
             entries.push({
                 accountId: revenueAccountId,
-                debit: 0,
-                credit: finalAmount,
+                debit: new Decimal(0),
+                credit: new Decimal(finalAmount),
                 description: `Revenue from: ${description}`
             });
         }
@@ -448,14 +449,14 @@ export class EnhancedJournalManagementService {
             const paymentAccountId = await this.getAccountIdFromName(paymentAccount, companyId, tenantId);
             entries.push({
                 accountId: expenseAccountId,
-                debit: finalAmount,
-                credit: 0,
+                debit: new Decimal(finalAmount),
+                credit: new Decimal(0),
                 description: `Expense: ${description}`
             });
             entries.push({
                 accountId: paymentAccountId,
-                debit: 0,
-                credit: finalAmount,
+                debit: new Decimal(0),
+                credit: new Decimal(finalAmount),
                 description: `Payment for: ${description}`
             });
         }
@@ -473,8 +474,8 @@ export class EnhancedJournalManagementService {
                     const debitStr = parts[1].replace('Debit:', '').trim();
                     const creditStr = parts[2].replace('Credit:', '').trim();
                     const description = parts[3].replace('Description:', '').trim();
-                    const debit = parseFloat(debitStr) || 0;
-                    const credit = parseFloat(creditStr) || 0;
+                    const debit = new Decimal(parseFloat(debitStr) || 0);
+                    const credit = new Decimal(parseFloat(creditStr) || 0);
                     try {
                         // Get account ID from database lookup
                         const accountId = await this.getAccountIdFromName(accountName, companyId, tenantId);
@@ -502,14 +503,14 @@ export class EnhancedJournalManagementService {
                     const paymentAccountId = await this.getAccountIdFromName(paymentMethod, companyId, tenantId);
                     entries.push({
                         accountId: inventoryAccountId,
-                        debit: totalAmount,
-                        credit: 0,
+                        debit: new Decimal(totalAmount),
+                        credit: new Decimal(0),
                         description: 'Inventory purchased'
                     });
                     entries.push({
                         accountId: paymentAccountId,
-                        debit: 0,
-                        credit: totalAmount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(totalAmount),
                         description: `Payment via ${paymentMethod}`
                     });
                 }
@@ -520,14 +521,14 @@ export class EnhancedJournalManagementService {
                     const revenueAccountId = await this.getAccountIdFromName('revenue', companyId, tenantId);
                     entries.push({
                         accountId: paymentAccountId,
-                        debit: totalAmount,
-                        credit: 0,
+                        debit: new Decimal(totalAmount),
+                        credit: new Decimal(0),
                         description: `Payment received via ${paymentMethod}`
                     });
                     entries.push({
                         accountId: revenueAccountId,
-                        debit: 0,
-                        credit: totalAmount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(totalAmount),
                         description: 'Revenue recognition'
                     });
                 }
@@ -537,14 +538,14 @@ export class EnhancedJournalManagementService {
                     const cashAccountId = await this.getAccountIdFromName('cash', companyId, tenantId);
                     entries.push({
                         accountId: expenseAccountId,
-                        debit: totalAmount,
-                        credit: 0,
+                        debit: new Decimal(totalAmount),
+                        credit: new Decimal(0),
                         description: 'Expense incurred'
                     });
                     entries.push({
                         accountId: cashAccountId,
-                        debit: 0,
-                        credit: totalAmount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(totalAmount),
                         description: 'Cash paid'
                     });
                 }
@@ -639,8 +640,8 @@ export class EnhancedJournalManagementService {
                     // Debit Accounts Payable
                     entries.push({
                         accountId: payableAccountId,
-                        debit: totalAmount,
-                        credit: 0,
+                        debit: new Decimal(totalAmount),
+                        credit: new Decimal(0),
                         description: `Purchase on credit from ${vendor}`,
                         metadata: {
                             quantity,
@@ -653,8 +654,8 @@ export class EnhancedJournalManagementService {
                     // Credit Inventory
                     entries.push({
                         accountId: inventoryAccountId,
-                        debit: 0,
-                        credit: totalAmount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(totalAmount),
                         description: `Inventory credit: ${quantity} x ${productInfo?.name || 'items'}`,
                         metadata: {
                             quantity,
@@ -674,8 +675,8 @@ export class EnhancedJournalManagementService {
                     // Debit Bank/Cash (decrease asset)
                     entries.push({
                         accountId: paymentAccount,
-                        debit: totalAmount,
-                        credit: 0,
+                        debit: new Decimal(totalAmount),
+                        credit: new Decimal(0),
                         description: `Payment to ${vendor} via ${paymentMethodName}`,
                         metadata: {
                             quantity,
@@ -689,8 +690,8 @@ export class EnhancedJournalManagementService {
                     // Credit Inventory
                     entries.push({
                         accountId: inventoryAccountId,
-                        debit: 0,
-                        credit: totalAmount,
+                        debit: new Decimal(0),
+                        credit: new Decimal(totalAmount),
                         description: `Inventory credit: ${quantity} x ${productInfo?.name || 'items'} @ ${unitCost} ${context?.currency || 'RWF'}`,
                         metadata: {
                             quantity,
@@ -768,12 +769,12 @@ export class EnhancedJournalManagementService {
                         }
                     });
                     if (product) {
-                        const cogsAmount = (product.costPrice || 0) * quantity;
+                        const cogsAmount = (product.costPrice?.toNumber() || 0) * quantity;
                         // Debit Cash (or Accounts Receivable for credit sales)
                         entries.push({
                             accountId: cashAccountId,
-                            debit: amount,
-                            credit: 0,
+                            debit: new Decimal(amount),
+                            credit: new Decimal(0),
                             description: `Sale of ${productInfo.name}`,
                             metadata: {
                                 quantity,
@@ -784,8 +785,8 @@ export class EnhancedJournalManagementService {
                         // Credit Revenue
                         entries.push({
                             accountId: revenueAccountId,
-                            debit: 0,
-                            credit: amount,
+                            debit: new Decimal(0),
+                            credit: new Decimal(amount),
                             description: `Revenue from sale of ${productInfo.name}`,
                             metadata: {
                                 quantity,
@@ -795,8 +796,8 @@ export class EnhancedJournalManagementService {
                         // Debit COGS
                         entries.push({
                             accountId: cogsAccountId,
-                            debit: cogsAmount,
-                            credit: 0,
+                            debit: new Decimal(cogsAmount),
+                            credit: new Decimal(0),
                             description: `COGS for ${productInfo.name}`,
                             metadata: {
                                 quantity,
@@ -806,8 +807,8 @@ export class EnhancedJournalManagementService {
                         // Credit Inventory
                         entries.push({
                             accountId: inventoryAccountId,
-                            debit: 0,
-                            credit: cogsAmount,
+                            debit: new Decimal(0),
+                            credit: new Decimal(cogsAmount),
                             description: `Reduction of ${productInfo.name} inventory`,
                             metadata: {
                                 quantity,
@@ -840,14 +841,14 @@ export class EnhancedJournalManagementService {
                 // Fallback to simple revenue entry if product not found
                 entries.push({
                     accountId: cashAccountId,
-                    debit: amount,
-                    credit: 0,
+                    debit: new Decimal(amount),
+                    credit: new Decimal(0),
                     description: 'Cash received'
                 });
                 entries.push({
                     accountId: revenueAccountId,
-                    debit: 0,
-                    credit: amount,
+                    debit: new Decimal(0),
+                    credit: new Decimal(amount),
                     description: 'Revenue recognition'
                 });
             }
@@ -876,14 +877,14 @@ export class EnhancedJournalManagementService {
                 }
                 entries.push({
                     accountId: cashAccountId,
-                    debit: amount,
-                    credit: 0,
+                    debit: new Decimal(amount),
+                    credit: new Decimal(0),
                     description: 'Cash transaction'
                 });
                 entries.push({
                     accountId: otherAccountId,
-                    debit: 0,
-                    credit: amount,
+                    debit: new Decimal(0),
+                    credit: new Decimal(amount),
                     description: 'Balancing entry'
                 });
             }
@@ -1119,8 +1120,8 @@ export class EnhancedJournalManagementService {
         if (!entries || entries.length === 0) {
             throw new Error('No entries provided for double-entry validation');
         }
-        const totalDebit = entries.reduce((sum, entry) => sum + (entry.debit || 0), 0);
-        const totalCredit = entries.reduce((sum, entry) => sum + (entry.credit || 0), 0);
+        const totalDebit = entries.reduce((sum, entry) => sum + (entry.debit?.toNumber() || 0), 0);
+        const totalCredit = entries.reduce((sum, entry) => sum + (entry.credit?.toNumber() || 0), 0);
         if (Math.abs(totalDebit - totalCredit) < 0.01) {
             return entries; // Already balanced
         }
@@ -1129,15 +1130,15 @@ export class EnhancedJournalManagementService {
         const difference = totalDebit - totalCredit;
         if (difference > 0) {
             // Need more credit
-            const largestEntry = adjustedEntries.reduce((largest, entry) => entry.credit > largest.credit ? entry : largest);
+            const largestEntry = adjustedEntries.reduce((largest, entry) => entry.credit.toNumber() > largest.credit.toNumber() ? entry : largest);
             const index = adjustedEntries.findIndex(entry => entry.id === largestEntry.id);
-            adjustedEntries[index].credit += difference;
+            adjustedEntries[index].credit = new Decimal(adjustedEntries[index].credit.toNumber() + difference);
         }
         else {
             // Need more debit
-            const largestEntry = adjustedEntries.reduce((largest, entry) => entry.debit > largest.debit ? entry : largest);
+            const largestEntry = adjustedEntries.reduce((largest, entry) => entry.debit.toNumber() > largest.debit.toNumber() ? entry : largest);
             const index = adjustedEntries.findIndex(entry => entry.id === largestEntry.id);
-            adjustedEntries[index].debit += Math.abs(difference);
+            adjustedEntries[index].debit = new Decimal(adjustedEntries[index].debit.toNumber() + Math.abs(difference));
         }
         return adjustedEntries;
     }
@@ -1153,8 +1154,8 @@ export class EnhancedJournalManagementService {
             return { isValid: false, errors };
         }
         // Check double-entry balance
-        const totalDebit = request.entries.reduce((sum, entry) => sum + (entry.debit || 0), 0);
-        const totalCredit = request.entries.reduce((sum, entry) => sum + (entry.credit || 0), 0);
+        const totalDebit = request.entries.reduce((sum, entry) => sum + (entry.debit?.toNumber() || 0), 0);
+        const totalCredit = request.entries.reduce((sum, entry) => sum + (entry.credit?.toNumber() || 0), 0);
         const isBalanced = Math.abs(totalDebit - totalCredit) < 0.01;
         if (!isBalanced) {
             errors.push(`Journal entry is not balanced. Debits: ${totalDebit}, Credits: ${totalCredit}`);
@@ -1173,8 +1174,8 @@ export class EnhancedJournalManagementService {
         }
         // Check for unusual amounts
         for (const entry of request.entries) {
-            if ((entry.debit || 0) > 1000000 || (entry.credit || 0) > 1000000) {
-                warnings.push(`Large amount detected: ${Math.max(entry.debit || 0, entry.credit || 0)}`);
+            if ((entry.debit?.toNumber() || 0) > 1000000 || (entry.credit?.toNumber() || 0) > 1000000) {
+                warnings.push(`Large amount detected: ${Math.max(entry.debit?.toNumber() || 0, entry.credit?.toNumber() || 0)}`);
             }
         }
         // Compliance checks
@@ -1433,8 +1434,8 @@ export class EnhancedJournalManagementService {
                     });
                 }
                 const balance = balanceMap.get(accountId);
-                const debitAmount = Number(line.debit) || 0;
-                const creditAmount = Number(line.credit) || 0;
+                const debitAmount = line.debit.toNumber() || 0;
+                const creditAmount = line.credit.toNumber() || 0;
                 balance.periodDebit += debitAmount;
                 balance.periodCredit += creditAmount;
                 // Calculate current balance based on account type
@@ -1468,8 +1469,8 @@ export class EnhancedJournalManagementService {
             description: journalEntry.memo || '',
             entries: journalEntry.lines.map(line => ({
                 accountId: line.accountId,
-                debit: Number(line.debit),
-                credit: Number(line.credit),
+                debit: line.debit,
+                credit: line.credit,
                 description: line.memo || ''
             })),
             source: 'manual'
@@ -1508,11 +1509,17 @@ export class EnhancedJournalManagementService {
         // Create reversing entries
         const reversingEntries = journalEntry.lines.map(line => ({
             accountId: line.accountId,
-            debit: Number(line.credit),
-            credit: Number(line.debit),
+            debit: line.credit,
+            credit: line.debit,
             description: `Reversal: ${line.memo || ''}`,
             reference: `VOID-${journalEntry.reference || ''}`,
-            metadata: { voidReason: reason }
+            metadata: {
+                category: 'void',
+                vendor: 'system',
+                customer: 'void',
+                project: 'void',
+                department: 'void'
+            }
         }));
         // Create void entry
         const voidEntry = await this.createJournalEntry({
@@ -1700,8 +1707,8 @@ export class EnhancedJournalManagementService {
                     name: productInfo.name,
                     sku: productInfo.sku || `AUTO-${Date.now()}`,
                     description: journalEntry.memo,
-                    costPrice: productInfo.unitCost || (Number(line.debit) / (productInfo.quantity || 1)),
-                    unitPrice: productInfo.sellingPrice || (Number(line.debit) * 1.3), // 30% markup default
+                    costPrice: productInfo.unitCost || (line.debit.toNumber() / (productInfo.quantity || 1)),
+                    unitPrice: productInfo.sellingPrice || (line.debit.toNumber() * 1.3), // 30% markup default
                     stockQuantity: productInfo.quantity || 1,
                     type: 'PRODUCT',
                     status: 'ACTIVE'

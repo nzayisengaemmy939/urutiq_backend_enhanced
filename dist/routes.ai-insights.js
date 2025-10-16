@@ -140,7 +140,7 @@ async function calculateFinancialHealthScore(tenantId, companyId, startDate, end
     else if (revenueGrowth >= 0)
         score += 10;
     // Overdue invoices factor (0-20 points)
-    const overdueInvoices = invoices.filter(inv => inv.balanceDue > 0 &&
+    const overdueInvoices = invoices.filter(inv => inv.balanceDue.toNumber() > 0 &&
         (inv.status === 'SENT' || inv.status === 'sent' || inv.status === 'PENDING' || inv.status === 'pending'));
     const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + Number(inv.balanceDue || 0), 0);
     const overduePercentage = totalRevenue > 0 ? (overdueAmount / totalRevenue) * 100 : 0;
@@ -439,7 +439,7 @@ async function getRecommendations(tenantId, companyId) {
     });
     const recommendations = [];
     // Payment terms recommendation
-    const overdueInvoices = invoices.filter(inv => inv.balanceDue > 0);
+    const overdueInvoices = invoices.filter(inv => inv.balanceDue.toNumber() > 0);
     if (overdueInvoices.length > 0) {
         const avgOverdueAmount = overdueInvoices.reduce((sum, inv) => sum + Number(inv.balanceDue || 0), 0) / overdueInvoices.length;
         recommendations.push({

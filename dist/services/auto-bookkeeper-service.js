@@ -2,6 +2,7 @@ import { prisma } from '../prisma';
 import { EnhancedConversationalAIService } from './enhanced-conversational-ai';
 import { EnhancedTransactionProcessingService } from './enhanced-transaction-processing';
 import { EnhancedJournalManagementService } from './enhanced-journal-management';
+import { Decimal } from '@prisma/client/runtime/library';
 // Auto-Bookkeeper Service
 export class AutoBookkeeperService {
     conversationalAI;
@@ -282,13 +283,13 @@ export class AutoBookkeeperService {
                 entries: [
                     {
                         accountId: journalEntry.debitAccount,
-                        debit: journalEntry.amount,
-                        credit: 0
+                        debit: new Decimal(journalEntry.amount),
+                        credit: new Decimal(0)
                     },
                     {
                         accountId: journalEntry.creditAccount,
-                        debit: 0,
-                        credit: journalEntry.amount
+                        debit: new Decimal(0),
+                        credit: new Decimal(journalEntry.amount)
                     }
                 ],
                 source: 'ai_generated',

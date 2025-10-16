@@ -9,7 +9,7 @@ import fs from "fs";
 import multer from "multer";
 import { config } from "./config.js";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth.js";
-import { prisma } from "./prisma";
+import { prisma } from "./prisma.js";
 import { tenantMiddleware } from "./tenant";
 import mongoService from "./config/mongodb.js";
 import { mountAccountRoutes } from "./routes.accounts";

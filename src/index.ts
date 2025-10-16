@@ -11,7 +11,7 @@ import multer from "multer";
 import { config, getApiUrl } from "./config.js";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth.js";
 import type { Role } from './auth.js';
-import { prisma } from "./prisma";
+import { prisma } from "./prisma.js";
 import { tenantMiddleware, TenantRequest } from "./tenant";
 import mongoService from "./config/mongodb.js";
 import { mountAccountRoutes } from "./routes.accounts";

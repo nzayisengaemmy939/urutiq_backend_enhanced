@@ -305,8 +305,8 @@ export class InvoiceOCRService {
         const lines = await prisma.invoiceLine.findMany({
             where: { invoiceId }
         });
-        const subtotal = lines.reduce((sum, line) => sum + line.lineTotal, 0);
-        const taxTotal = lines.reduce((sum, line) => sum + (line.lineTotal * line.taxRate / 100), 0);
+        const subtotal = lines.reduce((sum, line) => sum + line.lineTotal.toNumber(), 0);
+        const taxTotal = lines.reduce((sum, line) => sum + (line.lineTotal.toNumber() * line.taxRate / 100), 0);
         const totalAmount = subtotal + taxTotal;
         await prisma.invoice.update({
             where: { id: invoiceId },
