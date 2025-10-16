@@ -1,5 +1,5 @@
-import { NotificationService } from './notifications'
-import { prisma } from './prisma'
+import { NotificationService } from './notifications.js'
+import { prisma } from './prisma.js'
 
 export class CronService {
   /**

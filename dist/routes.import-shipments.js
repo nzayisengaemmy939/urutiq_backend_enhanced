@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { validateBody } from './validate.js';
 import { z } from 'zod';
 // Validation schemas
 const importShipmentSchemas = {

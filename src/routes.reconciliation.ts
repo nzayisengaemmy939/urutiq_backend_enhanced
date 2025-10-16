@@ -1,6 +1,6 @@
 import type { Router, Request, Response } from 'express'
-import { asyncHandler } from './errors'
-import { prisma } from './prisma'
+import { asyncHandler } from './errors.js'
+import { prisma } from './prisma.js'
 import { Prisma } from '@prisma/client'
 
 export function mountReconciliationRoutes(router: Router) {

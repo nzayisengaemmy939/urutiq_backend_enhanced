@@ -1,7 +1,7 @@
 import OAuth2Server from 'oauth2-server';
 import { Request, Response } from 'oauth2-server';
-import { prisma } from '../prisma';
-import { ApiError } from '../errors';
+import { prisma } from '../prisma.js';
+import { ApiError } from '../errors.js';
 import crypto from 'crypto';
 
 // OAuth 2.1 Scopes

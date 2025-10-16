@@ -1,7 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
-import { budgetManagementService } from '../services/budget-management.service';
-import { authMiddleware } from '../middleware/auth';
+import { budgetManagementService } from '../services/budget-management.service.js';
+import { authMiddleware } from '../middleware/auth.js';
 const router = express.Router();
 // Validation schemas
 const dimensionSchema = z.object({

@@ -1,11 +1,11 @@
 import express from 'express';
 import multer from 'multer';
 import { requireRoles } from '../auth.js';
-import { TenantRequest } from '../tenant';
-import { asyncHandler, ApiError } from '../errors';
-import tutorialVideoService from '../services/tutorial-video-service';
+import { TenantRequest } from '../tenant.js';
+import { asyncHandler, ApiError } from '../errors.js';
+import tutorialVideoService from '../services/tutorial-video-service.js';
 import mongoService from '../config/mongodb.js';
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 
 const router = express.Router();
 

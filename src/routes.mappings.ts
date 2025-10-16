@@ -1,7 +1,7 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { mappingSchemas, validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { mappingSchemas, validateBody } from './validate.js';
 
 export function mountMappingRoutes(router: Router) {
   router.get('/account-mappings', async (req: TenantRequest, res) => {

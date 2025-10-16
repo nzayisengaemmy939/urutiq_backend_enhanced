@@ -1,5 +1,5 @@
-import { redisCache } from '../services/redis-cache.service';
-import { ApiError } from '../errors';
+import { redisCache } from '../services/redis-cache.service.js';
+import { ApiError } from '../errors.js';
 export const cacheMiddleware = (options = {}) => {
     const { ttl = 300, // 5 minutes default
     prefix = 'api', keyGenerator = defaultKeyGenerator, skipCache = () => false, skipCacheOnError = true } = options;

@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { requireRoles } from './auth';
+import { prisma } from './prisma.js';
+import { requireRoles } from './auth.js';
 export function mountSupplierPortalRoutes(router) {
     // Get supplier profile
     router.get('/profile/:supplierId', requireRoles(['admin', 'accountant', 'supplier']), async (req, res) => {

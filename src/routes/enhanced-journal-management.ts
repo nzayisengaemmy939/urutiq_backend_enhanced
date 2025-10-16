@@ -1,8 +1,8 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
-import { enhancedJournalManagementService } from '../services/enhanced-journal-management';
-import type { TenantRequest } from '../tenant';
-import { prisma } from '../prisma';
+import { asyncHandler } from '../errors.js';
+import { enhancedJournalManagementService } from '../services/enhanced-journal-management.js';
+import type { TenantRequest } from '../tenant.js';
+import { prisma } from '../prisma.js';
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 export function mountWorkflowRoutes(router) {
     // Create workflow
     router.post('/workflows', async (req, res) => {

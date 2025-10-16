@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { TaxManagementService } from './services/tax-management.service';
-import { authMiddleware, requireRoles } from './auth';
-import { asyncHandler, ApiError } from './errors';
+import { TaxManagementService } from './services/tax-management.service.js';
+import { authMiddleware, requireRoles } from './auth.js';
+import { asyncHandler, ApiError } from './errors.js';
 import { z } from 'zod';
 const router = Router();
 // Validation schemas

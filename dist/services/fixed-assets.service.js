@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 export class FixedAssetsService {
     // Minimal persistence scaffolding using Prisma where available; fallback to memory
     memory = {

@@ -1,5 +1,5 @@
-import { salesAccountingIntegration } from '../services/sales-accounting-integration';
-import { prisma } from '../prisma';
+import { salesAccountingIntegration } from '../services/sales-accounting-integration.js';
+import { prisma } from '../prisma.js';
 export function mountSalesAccountingRoutes(router) {
     // Test route to verify mounting
     router.get('/test', (req, res) => {

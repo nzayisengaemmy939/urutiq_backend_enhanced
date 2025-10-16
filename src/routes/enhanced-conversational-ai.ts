@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { enhancedConversationalAIService } from '../services/enhanced-conversational-ai';
-import { prisma } from '../prisma';
-import { TenantRequest } from '../tenant';
-import { asyncHandler } from '../errors';
+import { enhancedConversationalAIService } from '../services/enhanced-conversational-ai.js';
+import { prisma } from '../prisma.js';
+import { TenantRequest } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
 
 const router = Router();
 

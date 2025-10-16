@@ -1,7 +1,7 @@
 import express from 'express'
-import { authMiddleware } from '../middleware/auth'
-import { tenantMiddleware } from '../middleware/tenant'
-import { seedBudgetManagementData } from '../seed/budget-management-seed'
+import { authMiddleware } from '../middleware/auth.js'
+import { tenantMiddleware } from '../middleware/tenant.js'
+import { seedBudgetManagementData } from '../seed/budget-management-seed.js'
 
 const router = express.Router()
 

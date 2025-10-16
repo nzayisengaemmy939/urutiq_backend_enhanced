@@ -1,7 +1,7 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { inventorySchemas, validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { inventorySchemas, validateBody } from './validate.js';
 import { Prisma } from '@prisma/client';
 
 export function mountInventoryRoutes(router: Router) {

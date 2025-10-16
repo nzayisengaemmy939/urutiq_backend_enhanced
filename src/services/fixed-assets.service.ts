@@ -1,4 +1,4 @@
-import { prisma } from '../prisma'
+import { prisma } from '../prisma.js'
 import { randomUUID } from 'crypto'
 
 export type DepMethod = 'straight_line' | 'declining_balance' | 'sum_of_years_digits'

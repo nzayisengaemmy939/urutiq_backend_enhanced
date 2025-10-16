@@ -1,16 +1,16 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
-import { aiSchemas, validateBody } from './validate';
-import { asyncHandler } from './errors';
-import { authMiddleware } from './auth';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
+import { aiSchemas, validateBody } from './validate.js';
+import { asyncHandler } from './errors.js';
+import { authMiddleware } from './auth.js';
 import type { Response } from 'express';
 import { 
   detectAnomalies, 
   generateInsights, 
   generatePredictions, 
   generateRecommendations 
-} from './ai';
+} from './ai.js';
 
 export function mountAiRoutes(router: Router) {
   // Apply authentication middleware to all AI routes

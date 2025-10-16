@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { ApiError } from '../errors';
+import { ApiError } from '../errors.js';
 export class RedisCacheService {
     static instance;
     redis;

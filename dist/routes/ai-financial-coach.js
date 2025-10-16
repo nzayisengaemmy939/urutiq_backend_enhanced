@@ -1,7 +1,7 @@
 import express from 'express';
-import { AIFinancialCoachService } from '../services/ai-financial-coach';
-import { authMiddleware, requireRoles } from '../auth';
-import { tenantMiddleware } from '../tenant';
+import { AIFinancialCoachService } from '../services/ai-financial-coach.js';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { tenantMiddleware } from '../tenant.js';
 const router = express.Router();
 const coachService = new AIFinancialCoachService();
 // Apply authentication and tenant middleware to all routes

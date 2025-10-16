@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { dataConsistencyService } from './services/data-consistency.service';
-import { validateRequest, commonSchemas } from './middleware/validation.middleware';
+import { dataConsistencyService } from './services/data-consistency.service.js';
+import { validateRequest, commonSchemas } from './middleware/validation.middleware.js';
 import { z } from 'zod';
 
 const router = Router();

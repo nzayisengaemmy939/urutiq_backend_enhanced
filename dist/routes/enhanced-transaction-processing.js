@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { authMiddleware, requireRoles } from '../middleware/auth';
-import { asyncHandler } from '../errors';
-import { prisma } from '../prisma';
-import { OCRService } from '../services/ocr-service';
+import { authMiddleware, requireRoles } from '../middleware/auth.js';
+import { asyncHandler } from '../errors.js';
+import { prisma } from '../prisma.js';
+import { OCRService } from '../services/ocr-service.js';
 const router = Router();
 // Receipt Processing Routes
 router.post('/receipts/process', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), requireRoles(['admin', 'accountant']), asyncHandler(async (req, res) => {

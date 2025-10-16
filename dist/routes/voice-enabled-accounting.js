@@ -1,5 +1,5 @@
 import express from 'express';
-import { VoiceEnabledAccountingService } from '../services/voice-enabled-accounting';
+import { VoiceEnabledAccountingService } from '../services/voice-enabled-accounting.js';
 const router = express.Router();
 const voiceService = new VoiceEnabledAccountingService();
 // Voice Settings Management

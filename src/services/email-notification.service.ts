@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 
 // Email configuration
 const emailConfig = {

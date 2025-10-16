@@ -1,5 +1,5 @@
 import express from 'express';
-import { AdvancedAnalyticsService } from '../services/advanced-analytics';
+import { AdvancedAnalyticsService } from '../services/advanced-analytics.js';
 
 const router = express.Router();
 const analyticsService = new AdvancedAnalyticsService();

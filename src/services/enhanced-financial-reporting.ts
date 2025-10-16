@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 import { Decimal } from '@prisma/client/runtime/library';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';

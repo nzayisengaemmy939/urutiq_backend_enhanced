@@ -1,8 +1,8 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import { tenantMiddleware } from '../tenant';
-import { asyncHandler } from '../errors';
-import { revenueRecognitionService } from '../services/revenue-recognition.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { tenantMiddleware } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
+import { revenueRecognitionService } from '../services/revenue-recognition.service.js';
 const router = express.Router();
 router.get('/revenue-recognition/:companyId/schedules', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), tenantMiddleware(), requireRoles(['accountant', 'admin']), asyncHandler(async (req, res) => {
     const { companyId } = req.params;

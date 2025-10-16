@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 export async function getAccountByPurpose(tenantId, companyId, purpose) {
     const mapping = await prisma.accountMapping.findFirst({ where: { tenantId, companyId, purpose } });
     if (!mapping)

@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 export class PDFGenerationService {
     async generateHTML(entryData, options = {}) {
         const { entry, lines, auditTrail } = entryData;

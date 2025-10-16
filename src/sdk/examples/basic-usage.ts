@@ -1,4 +1,4 @@
-import { UrutiIQClient, createUrutiIQClient } from '../src/urutiq-client';
+import { UrutiIQClient, createUrutiIQClient } from '../src/urutiq-client.js';
 
 // Example 1: Basic setup with API key
 const client = new UrutiIQClient({

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { asyncHandler } from './errors';
-import { prisma } from './prisma';
+import { asyncHandler } from './errors.js';
+import { prisma } from './prisma.js';
 const router = Router();
 // Tax Jurisdictions Management
 router.post('/jurisdictions', asyncHandler(async (req, res) => {

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { salesAccountingIntegration } from '../services/sales-accounting-integration';
-import { TenantRequest } from '../tenant';
-import { prisma } from '../prisma';
+import { salesAccountingIntegration } from '../services/sales-accounting-integration.js';
+import { TenantRequest } from '../tenant.js';
+import { prisma } from '../prisma.js';
 
 export function mountSalesAccountingRoutes(router: Router) {
   

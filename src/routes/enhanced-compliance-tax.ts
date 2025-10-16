@@ -1,8 +1,8 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
-import type { TenantRequest } from '../tenant';
-import { enhancedComplianceTaxService } from '../services/enhanced-compliance-tax';
-import { prisma } from '../prisma';
+import { asyncHandler } from '../errors.js';
+import type { TenantRequest } from '../tenant.js';
+import { enhancedComplianceTaxService } from '../services/enhanced-compliance-tax.js';
+import { prisma } from '../prisma.js';
 
 const router = express.Router();
 

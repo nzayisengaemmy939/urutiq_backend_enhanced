@@ -1,12 +1,12 @@
 import type { Router } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
 import { config } from './config.js';
-import { validateBody, schemas } from './validate';
-import { prisma as db } from './prisma';
-import { getAccountByPurpose } from './accounts';
-import { logAnomaly, addAudit } from './ai';
-import { enqueueAiJob } from './queue';
+import { validateBody, schemas } from './validate.js';
+import { prisma as db } from './prisma.js';
+import { getAccountByPurpose } from './accounts.js';
+import { logAnomaly, addAudit } from './ai.js';
+import { enqueueAiJob } from './queue.js';
 import nodemailer from 'nodemailer';
 import multer from 'multer';
 import PDFDocument from 'pdfkit';
@@ -26,13 +26,13 @@ const upload = multer({
     }
   }
 });
-import { enqueueWebhooks } from './webhooks';
-import { PaymentService } from './payment';
-import { NotificationService } from './notifications';
-import { InvoiceApprovalService } from './invoice-approval';
-import { InvoiceOCRService } from './invoice-ocr';
-import { InvoiceNLPService } from './invoice-nlp';
-import { ConversationalAccountingService } from './ai-conversational-accounting';
+import { enqueueWebhooks } from './webhooks.js';
+import { PaymentService } from './payment.js';
+import { NotificationService } from './notifications.js';
+import { InvoiceApprovalService } from './invoice-approval.js';
+import { InvoiceOCRService } from './invoice-ocr.js';
+import { InvoiceNLPService } from './invoice-nlp.js';
+import { ConversationalAccountingService } from './ai-conversational-accounting.js';
 
 function calcLineTotal(qty: number, price: number, taxRate: number) {
   const base = qty * price;

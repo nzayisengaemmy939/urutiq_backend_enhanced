@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
-import { authMiddleware, requireRoles } from './auth'
-import { asyncHandler } from './errors'
+import { authMiddleware, requireRoles } from './auth.js'
+import { asyncHandler } from './errors.js'
 
 export function mountAnalyticsRoutes(router: express.Router) {
 

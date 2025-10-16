@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 
 // AI Configuration Interfaces
 export interface AIConfig {

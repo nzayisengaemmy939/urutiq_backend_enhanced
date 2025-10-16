@@ -1,7 +1,7 @@
-import { prisma } from './prisma';
-import { validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { validateBody } from './validate.js';
 import { z } from 'zod';
-import { UnifiedApprovalEngine } from './services/unified-approval-engine.service';
+import { UnifiedApprovalEngine } from './services/unified-approval-engine.service.js';
 // ==================== VALIDATION SCHEMAS ====================
 const approvalSchemas = {
     // Workflow creation

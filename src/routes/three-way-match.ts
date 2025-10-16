@@ -1,8 +1,8 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import type { TenantRequest } from '../tenant';
-import { asyncHandler } from '../errors';
-import { threeWayMatchService } from '../services/three-way-match.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import type { TenantRequest } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
+import { threeWayMatchService } from '../services/three-way-match.service.js';
 
 const router = express.Router();
 

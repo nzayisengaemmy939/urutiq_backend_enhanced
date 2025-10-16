@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { enhancedConversationalAIService } from '../services/enhanced-conversational-ai';
-import { prisma } from '../prisma';
-import { asyncHandler } from '../errors';
+import { enhancedConversationalAIService } from '../services/enhanced-conversational-ai.js';
+import { prisma } from '../prisma.js';
+import { asyncHandler } from '../errors.js';
 const router = Router();
 // Main conversational AI endpoint
 router.post('/chat', asyncHandler(async (req, res) => {

@@ -1,8 +1,8 @@
 // ==================== UNIFIED APPROVAL INTEGRATION EXAMPLES ====================
 // This file demonstrates how to integrate the unified approval system with existing entity creation
 
-import { prisma } from '../prisma';
-import { UnifiedApprovalEngine } from '../services/unified-approval-engine.service';
+import { prisma } from '../prisma.js';
+import { UnifiedApprovalEngine } from '../services/unified-approval-engine.service.js';
 
 // ==================== EXAMPLE 1: JOURNAL ENTRY WITH UNIFIED APPROVAL ====================
 

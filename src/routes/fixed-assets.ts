@@ -1,8 +1,8 @@
 import express from 'express'
-import { authMiddleware, requireRoles } from '../auth'
-import { tenantMiddleware, TenantRequest } from '../tenant'
-import { asyncHandler } from '../errors'
-import { fixedAssetsService } from '../services/fixed-assets.service'
+import { authMiddleware, requireRoles } from '../auth.js'
+import { tenantMiddleware, TenantRequest } from '../tenant.js'
+import { asyncHandler } from '../errors.js'
+import { fixedAssetsService } from '../services/fixed-assets.service.js'
 
 const router = express.Router()
 

@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 export class CreditNotesService {
     async create(tenantId, companyId, body, userId) {
         try {

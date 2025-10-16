@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { mappingSchemas, validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { mappingSchemas, validateBody } from './validate.js';
 export function mountMappingRoutes(router) {
     router.get('/account-mappings', async (req, res) => {
         const companyId = String(req.query.companyId || '');

@@ -1,5 +1,5 @@
-import { prisma } from '../prisma';
-import { validateBody } from '../validate';
+import { prisma } from '../prisma.js';
+import { validateBody } from '../validate.js';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 // Enhanced validation schemas

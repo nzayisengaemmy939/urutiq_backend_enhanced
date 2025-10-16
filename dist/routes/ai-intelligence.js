@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { prisma } from '../prisma';
-import { AIService } from '../services/ai-service';
+import { prisma } from '../prisma.js';
+import { AIService } from '../services/ai-service.js';
 const router = Router();
 // Debug endpoint to check what documents exist
 router.get('/debug/documents', async (req, res) => {

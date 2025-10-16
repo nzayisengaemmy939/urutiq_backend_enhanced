@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { authMiddleware } from '../middleware/auth';
-import { tenantMiddleware } from '../middleware/tenant';
-import { asyncHandler } from '../errors';
-import { CurrencyService } from '../services/currency-service';
+import { authMiddleware } from '../middleware/auth.js';
+import { tenantMiddleware } from '../middleware/tenant.js';
+import { asyncHandler } from '../errors.js';
+import { CurrencyService } from '../services/currency-service.js';
 
 const prisma = new PrismaClient();
 const router = Router();

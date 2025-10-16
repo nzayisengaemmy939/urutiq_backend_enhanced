@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
-import { enhancedJournalManagementService } from '../services/enhanced-journal-management';
-import { prisma } from '../prisma';
+import { asyncHandler } from '../errors.js';
+import { enhancedJournalManagementService } from '../services/enhanced-journal-management.js';
+import { prisma } from '../prisma.js';
 const router = express.Router();
 // Create AI-powered journal entry
 router.post('/create', asyncHandler(async (req, res) => {

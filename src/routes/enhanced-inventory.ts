@@ -1,7 +1,7 @@
 import type { Router } from 'express';
-import { prisma } from '../prisma';
-import { TenantRequest } from '../tenant';
-import { validateBody } from '../validate';
+import { prisma } from '../prisma.js';
+import { TenantRequest } from '../tenant.js';
+import { validateBody } from '../validate.js';
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 

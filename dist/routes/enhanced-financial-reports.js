@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { enhancedFinancialReportingEngine } from '../services/enhanced-financial-reporting';
-import { prisma } from '../prisma';
-import { asyncHandler } from '../errors';
-import { authMiddleware } from '../auth';
+import { enhancedFinancialReportingEngine } from '../services/enhanced-financial-reporting.js';
+import { prisma } from '../prisma.js';
+import { asyncHandler } from '../errors.js';
+import { authMiddleware } from '../auth.js';
 const router = Router();
 // Create properly configured auth middleware
 const auth = authMiddleware(process.env.JWT_SECRET || "dev-secret");

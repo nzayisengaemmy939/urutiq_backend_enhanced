@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { enhancedFinancialReportingEngine } from '../services/enhanced-financial-reporting';
-import { prisma } from '../prisma';
-import { TenantRequest } from '../tenant';
-import { asyncHandler } from '../errors';
-import { authMiddleware } from '../auth';
+import { enhancedFinancialReportingEngine } from '../services/enhanced-financial-reporting.js';
+import { prisma } from '../prisma.js';
+import { TenantRequest } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
+import { authMiddleware } from '../auth.js';
 
 const router = Router();
 

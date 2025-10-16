@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 import { authMiddleware, requireRoles } from '../auth.js';
-import { ApiError, asyncHandler } from '../errors';
+import { ApiError, asyncHandler } from '../errors.js';
 const router = Router();
 const requireAuth = authMiddleware(process.env.JWT_SECRET || 'dev-secret');
 /**

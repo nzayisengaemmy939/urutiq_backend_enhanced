@@ -1,8 +1,8 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import type { TenantRequest } from '../tenant';
-import { asyncHandler } from '../errors';
-import { periodCloseService } from '../services/period-close.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import type { TenantRequest } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
+import { periodCloseService } from '../services/period-close.service.js';
 
 const router = express.Router();
 

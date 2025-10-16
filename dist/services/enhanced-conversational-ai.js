@@ -1,5 +1,5 @@
-import { prisma } from '../prisma';
-import { enhancedConversationalParser } from '../enhanced-conversational-parser';
+import { prisma } from '../prisma.js';
+import { enhancedConversationalParser } from '../enhanced-conversational-parser.js';
 export class EnhancedConversationalAIService {
     supportedLanguages = ['en', 'fr', 'rw', 'sw'];
     defaultLanguage = 'en';

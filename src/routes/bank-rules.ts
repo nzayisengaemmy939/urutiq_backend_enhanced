@@ -1,9 +1,9 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import type { TenantRequest } from '../tenant';
-import { asyncHandler } from '../errors';
-import { bankRulesService } from '../services/bank-rules.service';
-import { prisma } from '../prisma';
+import { authMiddleware, requireRoles } from '../auth.js';
+import type { TenantRequest } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
+import { bankRulesService } from '../services/bank-rules.service.js';
+import { prisma } from '../prisma.js';
 
 const router = express.Router();
 

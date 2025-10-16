@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiKeyService } from '../services/api-key.service';
-import { ApiError } from '../errors';
+import { ApiKeyService } from '../services/api-key.service.js';
+import { ApiError } from '../errors.js';
 
 export interface ApiKeyRequest extends Request {
   apiKey?: {

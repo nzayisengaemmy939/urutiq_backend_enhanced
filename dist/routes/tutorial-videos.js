@@ -1,9 +1,9 @@
 import express from 'express';
 import multer from 'multer';
 import { requireRoles } from '../auth.js';
-import { asyncHandler, ApiError } from '../errors';
-import tutorialVideoService from '../services/tutorial-video-service';
-import { prisma } from '../prisma';
+import { asyncHandler, ApiError } from '../errors.js';
+import tutorialVideoService from '../services/tutorial-video-service.js';
+import { prisma } from '../prisma.js';
 const router = express.Router();
 // Configure multer for video uploads
 const upload = multer({

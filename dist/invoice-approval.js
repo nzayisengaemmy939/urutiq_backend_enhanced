@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { NotificationService } from './notifications';
+import { prisma } from './prisma.js';
+import { NotificationService } from './notifications.js';
 export class InvoiceApprovalService {
     /**
      * Create approval workflow for invoice

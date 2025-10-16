@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { formatValidationError } from '../validation/schemas';
+import { formatValidationError } from '../validation/schemas.js';
 export const validateRequest = (options) => {
     return (req, res, next) => {
         try {

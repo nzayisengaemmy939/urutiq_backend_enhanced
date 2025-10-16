@@ -1,5 +1,5 @@
-import { prisma } from '../prisma';
-import { ApiError } from '../errors';
+import { prisma } from '../prisma.js';
+import { ApiError } from '../errors.js';
 export class TaxManagementService {
     /**
      * Calculate taxes for a given jurisdiction and entity type

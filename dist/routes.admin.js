@@ -1,6 +1,6 @@
-import { asyncHandler } from './errors';
-import { prisma } from './prisma';
-import { getQueueCounts } from './queue';
+import { asyncHandler } from './errors.js';
+import { prisma } from './prisma.js';
+import { getQueueCounts } from './queue.js';
 export function mountAdminRoutes(router) {
     router.get('/admin/queues', asyncHandler(async (req, res) => {
         const counts = await getQueueCounts();

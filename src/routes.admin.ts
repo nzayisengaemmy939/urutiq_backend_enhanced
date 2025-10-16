@@ -1,8 +1,8 @@
 import type { Router } from 'express';
-import { TenantRequest } from './tenant';
-import { asyncHandler } from './errors';
-import { prisma } from './prisma';
-import { getQueueCounts } from './queue';
+import { TenantRequest } from './tenant.js';
+import { asyncHandler } from './errors.js';
+import { prisma } from './prisma.js';
+import { getQueueCounts } from './queue.js';
 import type { Response } from 'express';
 
 export function mountAdminRoutes(router: Router) {

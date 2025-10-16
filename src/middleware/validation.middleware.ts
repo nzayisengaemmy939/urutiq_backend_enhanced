@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z, ZodSchema } from 'zod';
-import { formatValidationError } from '../validation/schemas';
+import { formatValidationError } from '../validation/schemas.js';
 
 export interface ValidationOptions {
   body?: ZodSchema;

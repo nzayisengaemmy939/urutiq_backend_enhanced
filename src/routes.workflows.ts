@@ -1,6 +1,6 @@
 import type { Router, Request, Response } from 'express';
-import { prisma } from './prisma';
-import { TenantRequest } from './tenant';
+import { prisma } from './prisma.js';
+import { TenantRequest } from './tenant.js';
 
 export function mountWorkflowRoutes(router: Router) {
   // Create workflow

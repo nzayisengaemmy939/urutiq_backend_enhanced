@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { inventorySchemas, validateBody } from './validate';
+import { prisma } from './prisma.js';
+import { inventorySchemas, validateBody } from './validate.js';
 import { Prisma } from '@prisma/client';
 export function mountInventoryRoutes(router) {
     router.get('/products', async (req, res) => {

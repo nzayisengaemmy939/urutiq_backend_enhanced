@@ -1,8 +1,8 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import { asyncHandler } from '../errors';
-import { bankRulesService } from '../services/bank-rules.service';
-import { prisma } from '../prisma';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { asyncHandler } from '../errors.js';
+import { bankRulesService } from '../services/bank-rules.service.js';
+import { prisma } from '../prisma.js';
 const router = express.Router();
 router.get('/bank-rules/:companyId', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), requireRoles(['admin', 'accountant']), asyncHandler(async (req, res) => {
     const { companyId } = req.params;

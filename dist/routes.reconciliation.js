@@ -1,5 +1,5 @@
-import { asyncHandler } from './errors';
-import { prisma } from './prisma';
+import { asyncHandler } from './errors.js';
+import { prisma } from './prisma.js';
 export function mountReconciliationRoutes(router) {
     // List rules
     router.get('/reconciliation/rules', asyncHandler(async (req, res) => {

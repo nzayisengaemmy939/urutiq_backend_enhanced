@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 export class BudgetManagementService {
     // Dimension Management
     async createDimension(companyId, dimensionData) {

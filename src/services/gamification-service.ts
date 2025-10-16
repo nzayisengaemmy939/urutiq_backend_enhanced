@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { EnhancedConversationalAIService } from './enhanced-conversational-ai';
+import { EnhancedConversationalAIService } from './enhanced-conversational-ai.js';
 
 const prisma = new PrismaClient();
 

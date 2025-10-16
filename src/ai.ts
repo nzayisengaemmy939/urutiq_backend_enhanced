@@ -1,4 +1,4 @@
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 
 export async function logAnomaly(params: { tenantId: string; companyId: string; transactionId?: string; anomalyType: string; confidenceScore?: number }) {
   const { tenantId, companyId, transactionId, anomalyType, confidenceScore = 0.6 } = params;

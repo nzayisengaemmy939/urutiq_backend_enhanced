@@ -1,6 +1,6 @@
-import { prisma } from '../prisma';
-import { enhancedConversationalParser } from '../enhanced-conversational-parser';
-import { conversationalParser } from '../conversational-parser';
+import { prisma } from '../prisma.js';
+import { enhancedConversationalParser } from '../enhanced-conversational-parser.js';
+import { conversationalParser } from '../conversational-parser.js';
 
 // Enhanced interfaces for the conversational AI service
 export interface ConversationContext {

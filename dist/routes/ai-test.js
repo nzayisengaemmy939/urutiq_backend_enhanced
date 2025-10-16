@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { AIService } from '../services/ai-service';
+import { AIService } from '../services/ai-service.js';
 const router = Router();
 // Simple test endpoint for AI functionality
 router.get('/test', async (req, res) => {

@@ -1,7 +1,7 @@
 import * as express from 'express';
-import { asyncHandler } from '../errors';
-import { enhancedComplianceTaxService } from '../services/enhanced-compliance-tax';
-import { prisma } from '../prisma';
+import { asyncHandler } from '../errors.js';
+import { enhancedComplianceTaxService } from '../services/enhanced-compliance-tax.js';
+import { prisma } from '../prisma.js';
 const router = express.Router();
 // Tax Calculation Engine
 router.post('/tax/calculate', asyncHandler(async (req, res) => {

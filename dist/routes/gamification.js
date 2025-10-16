@@ -1,5 +1,5 @@
 import express from 'express';
-import { GamificationService } from '../services/gamification-service';
+import { GamificationService } from '../services/gamification-service.js';
 const router = express.Router();
 const gamificationService = new GamificationService();
 // Achievement Management

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import { AIService } from '../services/ai-service'
+import { AIService } from '../services/ai-service.js'
 
 const router = Router()
 

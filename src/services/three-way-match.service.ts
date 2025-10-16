@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 
 export class ThreeWayMatchService {
   async getApprovalsMatrix(companyId: string) {

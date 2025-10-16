@@ -1,9 +1,9 @@
 import { Router, Response } from 'express';
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 import { authMiddleware, requireRoles } from '../auth.js';
-import { TenantRequest } from '../tenant';
-import { ApiError, asyncHandler } from '../errors';
-import { validateBody } from '../validate';
+import { TenantRequest } from '../tenant.js';
+import { ApiError, asyncHandler } from '../errors.js';
+import { validateBody } from '../validate.js';
 
 const router = Router();
 const requireAuth = authMiddleware(process.env.JWT_SECRET || 'dev-secret');

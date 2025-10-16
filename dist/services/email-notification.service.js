@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 // Email configuration
 const emailConfig = {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',

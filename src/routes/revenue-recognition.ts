@@ -1,9 +1,9 @@
 import express from 'express'
-import { authMiddleware, requireRoles } from '../auth'
-import { tenantMiddleware, TenantRequest } from '../tenant'
-import { asyncHandler } from '../errors'
-import { revenueRecognitionService } from '../services/revenue-recognition.service'
-import { prisma } from '../prisma'
+import { authMiddleware, requireRoles } from '../auth.js'
+import { tenantMiddleware, TenantRequest } from '../tenant.js'
+import { asyncHandler } from '../errors.js'
+import { revenueRecognitionService } from '../services/revenue-recognition.service.js'
+import { prisma } from '../prisma.js'
 
 const router = express.Router()
 

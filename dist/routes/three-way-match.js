@@ -1,7 +1,7 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import { asyncHandler } from '../errors';
-import { threeWayMatchService } from '../services/three-way-match.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { asyncHandler } from '../errors.js';
+import { threeWayMatchService } from '../services/three-way-match.service.js';
 const router = express.Router();
 router.post('/three-way-match/:poId/receive', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), requireRoles(['admin', 'accountant']), asyncHandler(async (req, res) => {
     const { poId } = req.params;

@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 export async function seedBudgetManagementData(companyId) {
     console.log(`🌱 Seeding budget management data for company: ${companyId}`);
     try {

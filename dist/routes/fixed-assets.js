@@ -1,8 +1,8 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import { tenantMiddleware } from '../tenant';
-import { asyncHandler } from '../errors';
-import { fixedAssetsService } from '../services/fixed-assets.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { tenantMiddleware } from '../tenant.js';
+import { asyncHandler } from '../errors.js';
+import { fixedAssetsService } from '../services/fixed-assets.service.js';
 const router = express.Router();
 router.get('/fixed-assets/:companyId/categories', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), tenantMiddleware(), requireRoles(['accountant', 'admin']), asyncHandler(async (req, res) => {
     res.json({ items: await fixedAssetsService.listCategories(req.params.companyId) });

@@ -1,7 +1,7 @@
 import express from 'express';
-import { authMiddleware, requireRoles } from '../auth';
-import { asyncHandler } from '../errors';
-import { periodCloseService } from '../services/period-close.service';
+import { authMiddleware, requireRoles } from '../auth.js';
+import { asyncHandler } from '../errors.js';
+import { periodCloseService } from '../services/period-close.service.js';
 const router = express.Router();
 router.get('/period-close/:companyId/periods', authMiddleware(process.env.JWT_SECRET || 'dev-secret'), requireRoles(['admin', 'accountant']), asyncHandler(async (req, res) => {
     const { companyId } = req.params;

@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
 export class EnhancedFinancialReportingEngine {

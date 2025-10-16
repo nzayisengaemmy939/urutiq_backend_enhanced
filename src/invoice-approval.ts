@@ -1,6 +1,6 @@
-import { prisma } from './prisma'
-import { TenantRequest } from './tenant'
-import { NotificationService } from './notifications'
+import { prisma } from './prisma.js'
+import { TenantRequest } from './tenant.js'
+import { NotificationService } from './notifications.js'
 
 export interface InvoiceApprovalData {
   invoiceId: string

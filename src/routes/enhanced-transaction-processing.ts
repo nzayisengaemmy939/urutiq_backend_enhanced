@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { authMiddleware, requireRoles } from '../middleware/auth';
-import { asyncHandler } from '../errors';
-import { TenantRequest } from '../tenant';
-import { prisma } from '../prisma';
-import { OCRService } from '../services/ocr-service';
+import { authMiddleware, requireRoles } from '../middleware/auth.js';
+import { asyncHandler } from '../errors.js';
+import { TenantRequest } from '../tenant.js';
+import { prisma } from '../prisma.js';
+import { OCRService } from '../services/ocr-service.js';
 
 const router = Router();
 

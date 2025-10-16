@@ -1,8 +1,8 @@
-import { prisma } from './prisma';
-import { aiSchemas, validateBody } from './validate';
-import { asyncHandler } from './errors';
-import { authMiddleware } from './auth';
-import { detectAnomalies, generateInsights, generatePredictions, generateRecommendations } from './ai';
+import { prisma } from './prisma.js';
+import { aiSchemas, validateBody } from './validate.js';
+import { asyncHandler } from './errors.js';
+import { authMiddleware } from './auth.js';
+import { detectAnomalies, generateInsights, generatePredictions, generateRecommendations } from './ai.js';
 export function mountAiRoutes(router) {
     // Apply authentication middleware to all AI routes
     router.use(authMiddleware(process.env.JWT_SECRET || 'dev-secret'));

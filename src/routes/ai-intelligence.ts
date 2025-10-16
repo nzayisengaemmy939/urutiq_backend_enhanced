@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express'
-import { prisma } from '../prisma'
+import { prisma } from '../prisma.js'
 import { mongoService } from '../config/mongodb.js'
 import { ObjectId } from 'mongodb'
-import { AIService } from '../services/ai-service'
+import { AIService } from '../services/ai-service.js'
 
 const router = Router()
 

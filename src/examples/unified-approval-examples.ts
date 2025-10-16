@@ -1,7 +1,7 @@
 // ==================== UNIFIED APPROVAL SYSTEM - USAGE EXAMPLES ====================
 // This file demonstrates how to use the unified approval system for different scenarios
 
-import { UnifiedApprovalEngine } from '../services/unified-approval-engine.service';
+import { UnifiedApprovalEngine } from '../services/unified-approval-engine.service.js';
 
 // ==================== EXAMPLE 1: JOURNAL ENTRY APPROVAL ====================
 

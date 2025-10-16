@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma } from '../prisma.js';
 // Simple in-memory storage for period statuses (in production, use a proper database table)
 const periodStatusStorage = new Map();
 // In-memory storage for period runs

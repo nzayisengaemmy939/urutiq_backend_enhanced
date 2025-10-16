@@ -1,5 +1,5 @@
-import { ApiKeyService } from '../services/api-key.service';
-import { ApiError } from '../errors';
+import { ApiKeyService } from '../services/api-key.service.js';
+import { ApiError } from '../errors.js';
 export const apiKeyAuthMiddleware = (requiredPermissions) => {
     return async (req, res, next) => {
         try {

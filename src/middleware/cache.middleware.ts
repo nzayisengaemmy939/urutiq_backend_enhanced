@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { redisCache } from '../services/redis-cache.service';
-import { ApiError } from '../errors';
+import { redisCache } from '../services/redis-cache.service.js';
+import { ApiError } from '../errors.js';
 
 export interface CacheMiddlewareOptions {
   ttl?: number; // Time to live in seconds

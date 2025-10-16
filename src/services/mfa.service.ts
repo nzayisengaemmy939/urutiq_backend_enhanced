@@ -1,5 +1,5 @@
-import { prisma } from '../prisma';
-import { ApiError } from '../errors';
+import { prisma } from '../prisma.js';
+import { ApiError } from '../errors.js';
 import crypto from 'crypto';
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
