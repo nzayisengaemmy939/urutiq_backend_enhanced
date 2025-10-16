@@ -3,7 +3,7 @@ import cors from "cors";
 import crypto from "crypto";
 import fs from "fs";
 import multer from "multer";
-import { loadConfig } from "@urutiq/config";
+import { config } from "./config";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth";
 import type { Role } from './auth';
 import { prisma } from "./prisma";
@@ -100,7 +100,8 @@ import aiTestRouter from './routes/ai-test';
 import simpleAiTestRouter from './routes/simple-ai-test';
 import validationRouter from './routes.validation';
 
-const { resolved, env } = loadConfig();
+const resolved = config;
+const env = process.env;
 const app = express();
 
 // Configure multer for file uploads

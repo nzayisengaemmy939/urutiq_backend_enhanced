@@ -1,12 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { loadConfig } from "@urutiq/config";
+import { config } from "./config";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth";
 import { tenantMiddleware, TenantRequest } from "./tenant";
 import llamaAIRouter from "./routes/llama-ai";
 import { errorHandler } from "./errors";
 
-const { resolved, env } = loadConfig();
+const resolved = config;
+const env = process.env;
 const app = express();
 
 // CORS configuration
