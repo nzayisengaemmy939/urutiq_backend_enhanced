@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { PrismaClient } from '@prisma/client';
-import mongoService from '../config/mongodb';
+import mongoService from '../config/mongodb.js';
 import crypto from 'crypto';
 const prisma = new PrismaClient();
 class FileStorageService {

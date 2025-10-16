@@ -1,6 +1,6 @@
 import { GridFSBucket, ObjectId } from 'mongodb';
 import { PrismaClient } from '@prisma/client';
-import mongoService, { COLLECTIONS } from '../config/mongodb';
+import mongoService, { COLLECTIONS } from '../config/mongodb.js';
 import crypto from 'crypto';
 
 const prisma = new PrismaClient();

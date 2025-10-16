@@ -13,7 +13,7 @@ import { authMiddleware, requireRoles, signDemoToken } from "./auth";
 import type { Role } from './auth';
 import { prisma } from "./prisma";
 import { tenantMiddleware, TenantRequest } from "./tenant";
-import mongoService from "./config/mongodb";
+import mongoService from "./config/mongodb.js";
 import { mountAccountRoutes } from "./routes.accounts";
 import { mountAccountingOverviewRoutes } from "./routes.accounting-overview";
 import { mountJournalRoutes } from "./routes.journal";

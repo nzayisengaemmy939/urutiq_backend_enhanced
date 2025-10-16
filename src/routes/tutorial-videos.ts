@@ -4,7 +4,7 @@ import { requireRoles } from '../auth';
 import { TenantRequest } from '../tenant';
 import { asyncHandler, ApiError } from '../errors';
 import tutorialVideoService from '../services/tutorial-video-service';
-import mongoService from '../config/mongodb';
+import mongoService from '../config/mongodb.js';
 import { prisma } from '../prisma';
 
 const router = express.Router();

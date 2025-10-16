@@ -2,7 +2,7 @@ import { prisma } from './prisma';
 import { validateBody, schemas } from './validate';
 import { ApiError } from './errors';
 import { createMulter } from './storage';
-import mongoService from './config/mongodb';
+import mongoService from './config/mongodb.js';
 import * as fs from 'node:fs';
 // Helper function to safely get user ID
 function getUserId(req) {

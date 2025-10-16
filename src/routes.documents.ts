@@ -4,7 +4,7 @@ import { TenantRequest } from './tenant';
 import { validateBody, schemas } from './validate';
 import { ApiError } from './errors';
 import { createMulter, localFilePath } from './storage';
-import mongoService from './config/mongodb';
+import mongoService from './config/mongodb.js';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 

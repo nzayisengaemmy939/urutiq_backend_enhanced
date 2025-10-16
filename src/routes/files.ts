@@ -7,7 +7,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { asyncHandler, ApiError } from '../errors';
 import fileStorageService from '../services/file-storage-service';
-import mongoService from '../config/mongodb';
+import mongoService from '../config/mongodb.js';
 
 const router = express.Router();
 
