@@ -1,34 +1,55 @@
 /**
  * Backend Environment Configuration
- * This centralizes all environment variables and provides fallbacks
+ * This centralizes all environment variables - no fallbacks
  */
+
+// Get environment variables - throws error if not set
+const getEnvVar = (key: string): string => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Environment variable ${key} is required but not set`);
+  }
+  return value;
+};
+
+const getEnvVarNumber = (key: string): number => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`Environment variable ${key} is required but not set`);
+  }
+  const num = Number(value);
+  if (isNaN(num)) {
+    throw new Error(`Environment variable ${key} must be a valid number`);
+  }
+  return num;
+};
 
 export const config = {
   // Server Configuration
   server: {
-    port: Number(process.env.PORT_BACKEND) || 4000,
-    host: process.env.HOST || 'localhost',
-    environment: process.env.NODE_ENV || 'development',
+    port: getEnvVarNumber('PORT_BACKEND'),
+    host: getEnvVar('HOST'),
+    environment: getEnvVar('NODE_ENV'),
   },
 
   // API Configuration
   api: {
-    baseUrl: process.env.API_BASE_URL || 'http://localhost:4000',
-    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+    baseUrl: getEnvVar('API_BASE_URL'),
+    frontendUrl: getEnvVar('FRONTEND_URL'),
   },
 
   // Database Configuration
   database: {
-    url: process.env.DATABASE_URL || 'file:./prisma/dev.db',
+    url: getEnvVar('DATABASE_URL'),
   },
 
   // Authentication
   auth: {
-    jwtSecret: process.env.JWT_SECRET || 'dev-secret',
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    jwtSecret: getEnvVar('JWT_SECRET'),
+    jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN'),
   },
 
-  // Email Configuration
+  // Email Configuration (optional - with fallbacks)
   email: {
     smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
     smtpPort: Number(process.env.SMTP_PORT) || 587,
@@ -39,32 +60,32 @@ export const config = {
     fromName: process.env.FROM_NAME || 'Urutiq',
   },
 
-  // AI Services Configuration
+  // AI Services Configuration (optional - with fallbacks)
   ai: {
     ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
     ollamaHost: process.env.OLLAMA_HOST || 'http://localhost:11434',
     huggingfaceApiKey: process.env.HUGGINGFACE_API_KEY || '',
   },
 
-  // External API Configuration
+  // External API Configuration (optional - with fallbacks)
   external: {
     nextPublicApiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000',
   },
 
-  // Payment Services
+  // Payment Services (optional - with fallbacks)
   payments: {
     stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
   },
 
-  // Bank Integration
+  // Bank Integration (optional - with fallbacks)
   banking: {
     chaseApiEndpoint: process.env.CHASE_API_ENDPOINT || 'https://api.chase.com',
     bankOfAmericaApiEndpoint: process.env.BANK_OF_AMERICA_API_ENDPOINT || 'https://api.bankofamerica.com',
     wellsFargoApiEndpoint: process.env.WELLS_FARGO_API_ENDPOINT || 'https://api.wellsfargo.com',
   },
 
-  // Mobile Money Services
+  // Mobile Money Services (optional - with fallbacks)
   mobileMoney: {
     paypalApiEndpoint: process.env.PAYPAL_API_ENDPOINT || 'https://api.paypal.com/v1',
     venmoApiEndpoint: process.env.VENMO_API_ENDPOINT || 'https://api.venmo.com/v1',

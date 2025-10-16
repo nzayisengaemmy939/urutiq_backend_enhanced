@@ -3,12 +3,11 @@ import cors from "cors";
 import crypto from "crypto";
 import fs from "fs";
 import multer from "multer";
-import { loadConfig } from "@urutiq/config";
+import { config } from "./config";
 import { authMiddleware, requireRoles, signDemoToken } from "./auth";
 import { prisma } from "./prisma";
 import { tenantMiddleware } from "./tenant";
 import mongoService from "./config/mongodb";
-import { config } from "./config";
 import { mountAccountRoutes } from "./routes.accounts";
 import { mountAccountingOverviewRoutes } from "./routes.accounting-overview";
 import { mountJournalRoutes } from "./routes.journal";
@@ -97,7 +96,8 @@ import aiIntelligenceRouter from './routes/ai-intelligence';
 import aiTestRouter from './routes/ai-test';
 import simpleAiTestRouter from './routes/simple-ai-test';
 import validationRouter from './routes.validation';
-const { resolved, env } = loadConfig();
+const resolved = config;
+const env = process.env;
 const app = express();
 // Configure multer for file uploads
 const storage = multer.diskStorage({
