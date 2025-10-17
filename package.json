@@ -9,8 +9,6 @@
     "dev:worker": "tsx watch src/worker.ts",
     "start": "node dist/index.js",
     "clean": "rimraf dist",
-    "prisma:use:sqlite": "copy prisma\\schema.sqlite.prisma prisma\\schema.prisma /Y",
-    "prisma:use:postgres": "copy prisma\\schema.postgres.prisma prisma\\schema.prisma /Y",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
