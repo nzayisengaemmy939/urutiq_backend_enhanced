@@ -4,7 +4,7 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json --noEmit false --skipLibCheck || echo 'Build completed with warnings'",
+    "build": "prisma generate && tsc -p tsconfig.json --noEmit false --skipLibCheck || echo 'Build completed with warnings'",
     "dev": "tsx watch src/index.ts",
     "dev:worker": "tsx watch src/worker.ts",
     "start": "node dist/index.js",
