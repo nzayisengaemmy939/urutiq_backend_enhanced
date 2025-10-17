@@ -5,7 +5,7 @@ import { UnifiedApprovalEngine } from '../services/unified-approval-engine.servi
 
 // ==================== EXAMPLE 1: JOURNAL ENTRY APPROVAL ====================
 
-export async function createJournalEntryApproval() {
+async function createJournalEntryApproval() {
   // Create approval request for a high-value journal entry
   const approvalRequest = await UnifiedApprovalEngine.createApprovalRequest(
     'tenant_demo',                    // tenantId
@@ -27,7 +27,7 @@ export async function createJournalEntryApproval() {
 
 // ==================== EXAMPLE 2: INVOICE APPROVAL ====================
 
-export async function createInvoiceApproval() {
+async function createInvoiceApproval() {
   // Create approval request for a large invoice
   const approvalRequest = await UnifiedApprovalEngine.createApprovalRequest(
     'tenant_demo',
@@ -50,7 +50,7 @@ export async function createInvoiceApproval() {
 
 // ==================== EXAMPLE 3: PURCHASE ORDER APPROVAL ====================
 
-export async function createPurchaseOrderApproval() {
+async function createPurchaseOrderApproval() {
   // Create approval request for a purchase order
   const approvalRequest = await UnifiedApprovalEngine.createApprovalRequest(
     'tenant_demo',
@@ -73,7 +73,7 @@ export async function createPurchaseOrderApproval() {
 
 // ==================== EXAMPLE 4: PROCESS APPROVAL ACTION ====================
 
-export async function processApproval() {
+async function processApproval() {
   // Approve a pending approval request
   const result = await UnifiedApprovalEngine.processApprovalAction(
     'tenant_demo',           // tenantId
@@ -90,7 +90,7 @@ export async function processApproval() {
 
 // ==================== EXAMPLE 5: REJECT APPROVAL ====================
 
-export async function rejectApproval() {
+async function rejectApproval() {
   // Reject a pending approval request
   const result = await UnifiedApprovalEngine.processApprovalAction(
     'tenant_demo',
@@ -107,7 +107,7 @@ export async function rejectApproval() {
 
 // ==================== EXAMPLE 6: ESCALATE APPROVAL ====================
 
-export async function escalateApproval() {
+async function escalateApproval() {
   // Escalate a pending approval request
   const result = await UnifiedApprovalEngine.processApprovalAction(
     'tenant_demo',
@@ -124,7 +124,7 @@ export async function escalateApproval() {
 
 // ==================== EXAMPLE 7: CREATE WORKFLOW ====================
 
-export async function createApprovalWorkflow() {
+async function createApprovalWorkflow() {
   // Create a multi-step approval workflow for high-value transactions
   const workflow = await UnifiedApprovalEngine.createWorkflow({
     tenantId: 'tenant_demo',
@@ -194,7 +194,7 @@ export async function createApprovalWorkflow() {
 
 // ==================== EXAMPLE 8: AMOUNT-BASED APPROVAL ====================
 
-export async function createAmountBasedWorkflow() {
+async function createAmountBasedWorkflow() {
   // Create workflow with amount-based approval routing
   const workflow = await UnifiedApprovalEngine.createWorkflow({
     tenantId: 'tenant_demo',
@@ -241,7 +241,7 @@ export async function createAmountBasedWorkflow() {
 
 // ==================== EXAMPLE 9: PARALLEL APPROVAL ====================
 
-export async function createParallelApprovalWorkflow() {
+async function createParallelApprovalWorkflow() {
   // Create workflow with parallel approval steps
   const workflow = await UnifiedApprovalEngine.createWorkflow({
     tenantId: 'tenant_demo',
@@ -289,7 +289,7 @@ export async function createParallelApprovalWorkflow() {
 
 // ==================== EXAMPLE 10: AUTO-APPROVAL WORKFLOW ====================
 
-export async function createAutoApprovalWorkflow() {
+async function createAutoApprovalWorkflow() {
   // Create workflow with auto-approval for low-value items
   const workflow = await UnifiedApprovalEngine.createWorkflow({
     tenantId: 'tenant_demo',
@@ -329,7 +329,7 @@ export async function createAutoApprovalWorkflow() {
 // ==================== INTEGRATION EXAMPLES ====================
 
 // Example: Integrate with existing journal entry creation
-export async function createJournalEntryWithApproval() {
+async function createJournalEntryWithApproval() {
   // 1. Create journal entry
   const journalEntry = await prisma.journalEntry.create({
     data: {
@@ -362,7 +362,7 @@ export async function createJournalEntryWithApproval() {
 }
 
 // Example: Integrate with existing invoice creation
-export async function createInvoiceWithApproval() {
+async function createInvoiceWithApproval() {
   // 1. Create invoice
   const invoice = await prisma.invoice.create({
     data: {
