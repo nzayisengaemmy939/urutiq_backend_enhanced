@@ -2,8 +2,8 @@
  * Backend Environment Configuration
  * This centralizes all environment variables - no fallbacks
  */
-// Debug: Log all environment variables
-console.log('🔧 All environment variables:', Object.keys(process.env).filter(key => key.includes('PORT') || key.includes('JWT') || key.includes('DATABASE') || key.includes('HOST') || key.includes('NODE_ENV') || key.includes('API') || key.includes('FRONTEND')));
+// Debug: Log all environment variables (commented out to avoid loading before dotenv)
+// console.log('🔧 All environment variables:', Object.keys(process.env).filter(key => key.includes('PORT') || key.includes('JWT') || key.includes('DATABASE') || key.includes('HOST') || key.includes('NODE_ENV') || key.includes('API') || key.includes('FRONTEND')));
 // Get environment variables - throws error if not set
 const getEnvVar = (key) => {
     const value = process.env[key];

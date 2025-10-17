@@ -2,27 +2,35 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 // Get the directory of the current module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load .env file from the API directory
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
-console.log('🔧 dotenv loaded from:', path.join(__dirname, '..', '.env'));
+const envPath = path.join(__dirname, '..', '.env');
+console.log('🔧 Looking for .env at:', envPath);
+console.log('🔧 File exists:', fs.existsSync(envPath));
+
+const result = dotenv.config({ path: envPath });
+console.log('🔧 dotenv result:', result);
+console.log('🔧 DATABASE_URL:', process.env.DATABASE_URL ? '***configured***' : 'missing');
 console.log('🔧 SMTP_HOST:', process.env.SMTP_HOST);
 console.log('🔧 SMTP_USER:', process.env.SMTP_USER ? '***configured***' : 'missing');
 console.log('🔧 SMTP_PASS:', process.env.SMTP_PASS ? '***configured***' : 'missing');
+
+// Import config AFTER dotenv is loaded
+import { config, getApiUrl } from "./config.js";
+import { authMiddleware, requireRoles, signDemoToken } from "./auth.js";
+import type { Role } from './auth.js';
+import { prisma } from "./prisma.js";
 
 import express from "express";
 import cors from "cors";
 import crypto from "crypto";
 import fs from "fs";
 import multer from "multer";
-import { config, getApiUrl } from "./config.js";
-import { authMiddleware, requireRoles, signDemoToken } from "./auth.js";
-import type { Role } from './auth.js';
-import { prisma } from "./prisma.js";
 import { tenantMiddleware, TenantRequest } from "./tenant.js";
 import mongoService from "./config/mongodb.js";
 import { mountAccountRoutes } from "./routes.accounts.js";
