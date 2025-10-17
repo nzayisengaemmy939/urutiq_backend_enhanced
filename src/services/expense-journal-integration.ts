@@ -618,9 +618,10 @@ export class ExpenseJournalIntegration {
    * Find tax account for expense
    */
   private async findTaxAccount(expense: any, tenantId: string, companyId: string) {
-    // Look up tax payable account from the database
-    const taxAccount = await this.findAccountByCode(tenantId, companyId, '2100');
+    // SENIOR ACCOUNTING: Use correct tax account (Taxes Payable - 2300)
+    const taxAccount = await this.findAccountByCode(tenantId, companyId, '2300');
     if (taxAccount) {
+      console.log(`✅ Found correct tax account: ${taxAccount.name} (${taxAccount.code})`);
       return taxAccount;
     }
     
@@ -636,10 +637,12 @@ export class ExpenseJournalIntegration {
     });
     
     if (fallbackTaxAccount) {
+      console.log(`✅ Found fallback tax account: ${fallbackTaxAccount.name} (${fallbackTaxAccount.code})`);
       return fallbackTaxAccount;
     }
     
     // If no tax account found, return null (tax line will be skipped)
+    console.log(`⚠️ No tax account found for expense ${expense.id}, skipping tax line`);
     return null;
   }
 

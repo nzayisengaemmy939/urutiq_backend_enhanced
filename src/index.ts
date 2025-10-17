@@ -1,7 +1,18 @@
 // Load environment variables FIRST before any other imports
 import dotenv from 'dotenv';
-dotenv.config();
-console.log('🔧 dotenv loaded, checking PORT_BACKEND:', process.env.PORT_BACKEND);
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the directory of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env file from the API directory
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
+console.log('🔧 dotenv loaded from:', path.join(__dirname, '..', '.env'));
+console.log('🔧 SMTP_HOST:', process.env.SMTP_HOST);
+console.log('🔧 SMTP_USER:', process.env.SMTP_USER ? '***configured***' : 'missing');
+console.log('🔧 SMTP_PASS:', process.env.SMTP_PASS ? '***configured***' : 'missing');
 
 import express from "express";
 import cors from "cors";
