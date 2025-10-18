@@ -135,6 +135,7 @@ model Company {
   fixedAssetCategories FixedAssetCategory[]
   fixedAssets      FixedAsset[]
   fixedAssetDepreciations FixedAssetDepreciation[]
+  maintenanceRecords MaintenanceRecord[]
   creditNotes      CreditNote[]
   ocrReceipts      OCRReceipt[]
   
@@ -4490,6 +4491,7 @@ model FixedAsset {
   startDepreciation String  // ISO date string
   salvageValue     Float?
   notes            String?
+  status           String   @default("DRAFT") // DRAFT, POSTED, DISPOSED
   
   // Disposal fields
   disposedAt       String?  // ISO date string
@@ -4503,6 +4505,7 @@ model FixedAsset {
   company  Company           @relation(fields: [companyId], references: [id])
   category FixedAssetCategory @relation(fields: [categoryId], references: [id])
   depreciations FixedAssetDepreciation[]
+  maintenanceRecords MaintenanceRecord[]
   
   @@index([tenantId, companyId])
   @@index([tenantId, companyId, categoryId])
@@ -4532,6 +4535,34 @@ model FixedAssetDepreciation {
   @@index([tenantId, companyId, assetId])
   @@index([tenantId, companyId, period])
   @@map("fixed_asset_depreciations")
+}
+
+model MaintenanceRecord {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  assetId           String
+  maintenanceDate   DateTime
+  maintenanceType   String   // PREVENTIVE, CORRECTIVE, EMERGENCY, INSPECTION
+  description       String
+  performedBy       String?
+  cost              Float    @default(0)
+  extendsUsefulLife Boolean  @default(false)
+  lifeExtensionMonths Int?
+  invoiceNumber     String?
+  warrantyInfo      String?
+  status            String   @default("COMPLETED") // COMPLETED, IN_PROGRESS, SCHEDULED, CANCELLED
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  company Company    @relation(fields: [companyId], references: [id])
+  asset   FixedAsset @relation(fields: [assetId], references: [id])
+
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, assetId])
+  @@index([tenantId, companyId, maintenanceDate])
+  @@map("maintenance_records")
 }
 
 model CreditNote {

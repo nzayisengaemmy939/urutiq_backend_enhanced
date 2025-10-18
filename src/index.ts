@@ -29,7 +29,7 @@ import { prisma } from "./prisma.js";
 import express from "express";
 import cors from "cors";
 import crypto from "crypto";
-import fs from "fs";
+
 import multer from "multer";
 import { tenantMiddleware, TenantRequest } from "./tenant.js";
 import mongoService from "./config/mongodb.js";
@@ -48,6 +48,7 @@ import { paymentsRouter } from "./routes.payments.js";
 import purchaseOrderPDFRouter from "./routes.purchase-order-pdf.js";
 import goodReceiptPDFRouter from "./routes.good-receipt-pdf.js";
 import { mountExpenseRoutes } from "./routes.expenses.js";
+import { mountFixedAssetRoutes } from "./routes.fixed-assets.js";
 import billsRouter from "./routes.bills.js";
 import { mountApprovalRoutes } from "./routes.approvals.js";
 import { mountUnifiedApprovalRoutes } from "./routes.unified-approvals.js";
@@ -667,6 +668,7 @@ app.use('/api', (() => {
   // Mount payments routes
   router.use('/payments', paymentsRouter);
   mountExpenseRoutes(router);
+  mountFixedAssetRoutes(router);
   router.use('/bills', billsRouter);
   mountApprovalRoutes(router);
   

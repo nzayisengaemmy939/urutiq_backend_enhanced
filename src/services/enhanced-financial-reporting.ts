@@ -676,7 +676,11 @@ export class EnhancedFinancialReportingEngine {
 
   private groupAssets(balances: AccountBalance[]): AssetSection {
     const currentAssets = balances.filter(b => b.accountNumber.startsWith('11') || b.accountNumber.startsWith('12'));
-    const fixedAssets = balances.filter(b => b.accountNumber.startsWith('13') || b.accountNumber.startsWith('14'));
+    const fixedAssets = balances.filter(b => 
+      b.accountNumber.startsWith('13') || 
+      b.accountNumber.startsWith('14') ||
+      b.accountNumber.startsWith('FA-') // Include our fixed asset accounts
+    );
     const otherAssets = balances.filter(b => b.accountNumber.startsWith('15') || b.accountNumber.startsWith('19'));
 
     return {

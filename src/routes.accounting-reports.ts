@@ -206,7 +206,14 @@ router.get('/general-ledger', async (req: TenantRequest, res) => {
 // Balance Sheet Report
 router.get('/balance-sheet', async (req: TenantRequest, res) => {
   try {
-    const { companyId, tenantId } = req;
+    console.log('🔍 Balance Sheet Request:', { 
+      tenantId: req.tenantId, 
+      companyId: req.query.companyId,
+      asOfDate: req.query.asOfDate 
+    });
+    
+    const { tenantId } = req;
+    const companyId = req.query.companyId as string;
     if (!companyId) {
       return res.status(400).json({ error: 'Company ID is required' });
     }
@@ -221,13 +228,14 @@ router.get('/balance-sheet', async (req: TenantRequest, res) => {
         isActive: true
       },
       include: {
-        accountType: true,
+        type: true,
         journalLines: {
           where: {
             entry: {
               date: {
                 lte: asOf
-              }
+              },
+              status: 'POSTED'
             }
           },
           include: {
@@ -257,7 +265,7 @@ router.get('/balance-sheet', async (req: TenantRequest, res) => {
         isDebit: balance >= 0
       };
 
-      switch (account.accountType.code) {
+      switch (account.type.code) {
         case 'ASSET':
           accountGroups.assets.push(accountData);
           break;
@@ -301,6 +309,12 @@ router.get('/balance-sheet', async (req: TenantRequest, res) => {
     });
   } catch (error) {
     console.error('Error generating balance sheet:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      tenantId: req.tenantId,
+      companyId: req.query.companyId
+    });
     res.status(500).json({ error: 'Failed to generate balance sheet' });
   }
 });
@@ -322,21 +336,22 @@ router.get('/income-statement', async (req: TenantRequest, res) => {
       where: {
         companyId,
         isActive: true,
-        accountType: {
+        type: {
           code: {
             in: ['REVENUE', 'EXPENSE']
           }
         }
       },
       include: {
-        accountType: true,
+        type: true,
         journalLines: {
           where: {
             entry: {
               date: {
                 gte: start,
                 lte: end
-              }
+              },
+              status: 'POSTED'
             }
           },
           include: {
@@ -346,8 +361,8 @@ router.get('/income-statement', async (req: TenantRequest, res) => {
       }
     });
 
-    const revenueAccounts = accounts.filter(acc => acc.accountType.code === 'REVENUE');
-    const expenseAccounts = accounts.filter(acc => acc.accountType.code === 'EXPENSE');
+    const revenueAccounts = accounts.filter(acc => acc.type.code === 'REVENUE');
+    const expenseAccounts = accounts.filter(acc => acc.type.code === 'EXPENSE');
 
     // Calculate revenue
     const revenue = revenueAccounts.map(account => {
