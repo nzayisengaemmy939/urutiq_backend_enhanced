@@ -125,6 +125,124 @@ export class PurchaseOrderDeliveryService {
               }
             });
           }
+        } else if ((purchaseOrder as any).inventoryType === 'fixed_assets') {
+          // Handle fixed assets delivery
+          console.log('🔍 Processing fixed assets delivery for line:', line.description);
+          
+          const quantityToDeliver = Number(line.quantity) - Number(line.receivedQuantity || 0);
+          
+          if (quantityToDeliver > 0) {
+            // Create or get default category
+            let defaultCategory = await tx.fixedAssetCategory.findFirst({
+              where: {
+                tenantId: purchaseOrder.tenantId,
+                companyId: purchaseOrder.companyId,
+                name: 'General Equipment'
+              }
+            });
+            
+            if (!defaultCategory) {
+              defaultCategory = await tx.fixedAssetCategory.create({
+                data: {
+                  tenantId: purchaseOrder.tenantId,
+                  companyId: purchaseOrder.companyId,
+                  name: 'General Equipment',
+                  usefulLifeMonths: 60,
+                  method: 'straight_line',
+                  salvageRate: 0.1
+                }
+              });
+            }
+            
+            // Use description as asset name
+            const assetName = line.description || 'Unknown Asset';
+            
+            // Check if asset exists
+            const existingAsset = await tx.fixedAsset.findFirst({
+              where: {
+                tenantId: purchaseOrder.tenantId,
+                companyId: purchaseOrder.companyId,
+                name: assetName,
+                cost: Number(line.unitPrice)
+              }
+            });
+            
+            if (existingAsset) {
+              // Update existing asset quantity
+              await tx.fixedAsset.update({
+                where: { id: existingAsset.id },
+                data: {
+                  quantity: (existingAsset as any).quantity + quantityToDeliver
+                } as any
+              });
+              console.log(`✅ Updated fixed asset: ${assetName} quantity from ${(existingAsset as any).quantity} to ${(existingAsset as any).quantity + quantityToDeliver}`);
+              
+              // Create movement record for existing asset
+              await tx.fixedAssetMovement.create({
+                data: {
+                  tenantId: purchaseOrder.tenantId,
+                  companyId: purchaseOrder.companyId,
+                  assetId: existingAsset.id,
+                  movementType: 'ACQUISITION',
+                  quantity: quantityToDeliver,
+                  unitCost: Number(line.unitPrice),
+                  totalCost: quantityToDeliver * Number(line.unitPrice),
+                  movementDate: data.deliveredDate,
+                  reference: `PO-${purchaseOrder.poNumber}`,
+                  reason: `Asset acquisition from PO ${purchaseOrder.poNumber}`,
+                  notes: `Delivered via purchase order system`,
+                  createdById: data.userId
+                }
+              });
+            } else {
+              // Create new asset
+              const newAsset = await tx.fixedAsset.create({
+                data: {
+                  tenantId: purchaseOrder.tenantId,
+                  companyId: purchaseOrder.companyId,
+                  categoryId: defaultCategory.id,
+                  name: assetName,
+                  cost: Number(line.unitPrice),
+                  quantity: quantityToDeliver,
+                  currency: purchaseOrder.currency,
+                  acquisitionDate: data.deliveredDate.toISOString().split('T')[0],
+                  startDepreciation: data.deliveredDate.toISOString().split('T')[0],
+                  salvageValue: Number(line.unitPrice) * 0.1,
+                  notes: `Created from PO ${purchaseOrder.poNumber} delivery`,
+                  status: 'POSTED'
+                } as any
+              });
+              console.log(`✅ Created new fixed asset: ${assetName} with quantity ${quantityToDeliver}`);
+              
+              // Create movement record for new asset
+              await tx.fixedAssetMovement.create({
+                data: {
+                  tenantId: purchaseOrder.tenantId,
+                  companyId: purchaseOrder.companyId,
+                  assetId: newAsset.id,
+                  movementType: 'ACQUISITION',
+                  quantity: quantityToDeliver,
+                  unitCost: Number(line.unitPrice),
+                  totalCost: quantityToDeliver * Number(line.unitPrice),
+                  movementDate: data.deliveredDate,
+                  reference: `PO-${purchaseOrder.poNumber}`,
+                  reason: `New asset acquisition from PO ${purchaseOrder.poNumber}`,
+                  notes: `Created and delivered via purchase order system`,
+                  createdById: data.userId
+                }
+              });
+            }
+
+            // Update PO line received quantity
+            await tx.purchaseOrderLine.update({
+              where: { id: line.id },
+              data: {
+                receivedQuantity: {
+                  increment: quantityToDeliver
+                }
+              }
+            });
+          }
         }
       }
 

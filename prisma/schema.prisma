@@ -135,6 +135,7 @@ model Company {
   fixedAssetCategories FixedAssetCategory[]
   fixedAssets      FixedAsset[]
   fixedAssetDepreciations FixedAssetDepreciation[]
+  fixedAssetMovements FixedAssetMovement[]
   maintenanceRecords MaintenanceRecord[]
   creditNotes      CreditNote[]
   ocrReceipts      OCRReceipt[]
@@ -1020,6 +1021,7 @@ model AppUser {
   journalEntryApprovalsRequested JournalEntryApproval[] @relation("JournalEntryApprovalRequester")
   journalEntryApprovalsApproved JournalEntryApproval[] @relation("JournalEntryApprovalApprover")
   journalEntryAudits JournalEntryAudit[]
+  fixedAssetMovementsCreated FixedAssetMovement[] @relation("FixedAssetMovementCreator")
   journalSearches JournalSearch[]
 
   // Unified Approval System Relations
@@ -2538,6 +2540,8 @@ model PurchaseOrder {
   terms             String?
   approvalWorkflow  String?   // JSON string for approval steps
   receivingStatus   String    @default("pending") // pending, partial, complete
+  // Inventory Type - determines how products affect inventory
+  inventoryType     String    @default("assets") // assets | fixed_assets
   // related bill reference (defined below in relations section)
   // Import/Export Purchase Support
   purchaseType      String    @default("local") // local | import
@@ -4486,6 +4490,7 @@ model FixedAsset {
   categoryId       String
   name             String
   cost             Float
+  quantity         Int      @default(1) // Senior asset quantity tracking
   currency         String   @default("USD")
   acquisitionDate  String   // ISO date string
   startDepreciation String  // ISO date string
@@ -4506,10 +4511,42 @@ model FixedAsset {
   category FixedAssetCategory @relation(fields: [categoryId], references: [id])
   depreciations FixedAssetDepreciation[]
   maintenanceRecords MaintenanceRecord[]
+  movements FixedAssetMovement[]
   
   @@index([tenantId, companyId])
   @@index([tenantId, companyId, categoryId])
   @@map("fixed_assets")
+}
+
+model FixedAssetMovement {
+  id            String   @id @default(cuid())
+  tenantId      String
+  companyId     String
+  assetId       String
+  movementType  String   // ACQUISITION, DISPOSAL, TRANSFER_IN, TRANSFER_OUT, ADJUSTMENT, REVALUATION
+  quantity      Int      @default(1)
+  unitCost      Float
+  totalCost     Float
+  movementDate  DateTime
+  reference     String?  // PO number, invoice number, etc.
+  reason        String?
+  notes         String?
+  locationId    String?  // If transferring between locations
+  createdById   String?  // User who created the movement
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  company   Company    @relation(fields: [companyId], references: [id])
+  asset     FixedAsset @relation(fields: [assetId], references: [id])
+  createdBy AppUser?   @relation("FixedAssetMovementCreator", fields: [createdById], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, assetId])
+  @@index([tenantId, companyId, movementType])
+  @@index([tenantId, companyId, movementDate])
+  @@map("fixed_asset_movements")
 }
 
 model FixedAssetDepreciation {

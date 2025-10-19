@@ -86,7 +86,7 @@ router.get('/entries', requireRoles(['admin', 'accountant']), async (req: Tenant
           },
           entryType: true
         },
-        orderBy: { date: 'desc' },
+        orderBy: { date: 'asc' },
         skip,
         take: pageSize
       });

@@ -18,6 +18,8 @@ const purchaseOrderSchemas = {
     currency: z.string().default('USD'),
     notes: z.string().optional(),
     terms: z.string().optional(),
+    // Inventory Type - determines how products affect inventory
+    inventoryType: z.enum(['assets', 'fixed_assets']).default('assets').optional(),
     // Import/Export Purchase Support
     purchaseType: z.enum(['local', 'import']).default('local').optional(),
     vendorCurrency: z.string().length(3).optional(),
@@ -50,6 +52,8 @@ const purchaseOrderSchemas = {
     notes: z.string().optional(),
     terms: z.string().optional(),
     status: z.enum(['draft', 'approved', 'delivered', 'closed', 'cancelled']).optional(),
+    // Inventory Type - determines how products affect inventory
+    inventoryType: z.enum(['assets', 'fixed_assets']).optional(),
     // Import/Export Purchase Support
     purchaseType: z.enum(['local', 'import']).optional(),
     vendorCurrency: z.string().length(3).optional(),
@@ -215,7 +219,7 @@ export function mountPurchaseOrderRoutes(router: Router) {
             lines: true,
             receipts: { include: { items: true } }
           },
-          orderBy: { orderDate: 'desc' }, 
+          orderBy: { orderDate: 'asc' }, 
           skip, 
           take: pageSize 
         })
@@ -268,10 +272,16 @@ export function mountPurchaseOrderRoutes(router: Router) {
   });
 
   // Create purchase order
-  router.post('/purchase-orders', validateBody(purchaseOrderSchemas.create), async (req: TenantRequest, res) => {
+  router.post('/purchase-orders', async (req: TenantRequest, res) => {
     const data = req.body as any;
+    const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+    
+    console.log('🔍 DEBUG: Purchase order creation started');
+    console.log('🔍 DEBUG: Data received:', JSON.stringify(data, null, 2));
+    console.log('🔍 DEBUG: Company ID from header:', companyId);
     
     try {
+      console.log('🔍 DEBUG: Starting database transaction');
       const result = await prisma.$transaction(async (tx) => {
         // Calculate total amount including import costs
         const baseTotal = data.lines.reduce((sum: number, line: any) => {
@@ -282,11 +292,14 @@ export function mountPurchaseOrderRoutes(router: Router) {
         const importCosts = (data.freightCost || 0) + (data.customsDuty || 0) + (data.otherImportCosts || 0);
         const totalAmount = baseTotal + importCosts;
 
+        console.log('🔍 DEBUG: Calculated total amount:', totalAmount);
+
         // Create purchase order
+        console.log('🔍 DEBUG: Creating purchase order...');
         const purchaseOrder = await tx.purchaseOrder.create({
           data: {
             tenantId: req.tenantId!,
-            companyId: data.companyId,
+            companyId: companyId,
             vendorId: data.vendorId,
             poNumber: data.poNumber,
             orderDate: new Date(data.orderDate),
@@ -307,35 +320,63 @@ export function mountPurchaseOrderRoutes(router: Router) {
             shippingMethod: data.shippingMethod,
             originCountry: data.originCountry,
             destinationCountry: data.destinationCountry,
-            portOfEntry: data.portOfEntry
-          }
+            portOfEntry: data.portOfEntry,
+            // Inventory Type - using type assertion due to Prisma client generation issue
+            inventoryType: (data as any).inventoryType || 'assets'
+          } as any
         });
 
+        console.log('🔍 DEBUG: Purchase order created successfully:', purchaseOrder.id);
+
         // Create purchase order lines
+        console.log('🔍 DEBUG: Creating purchase order lines...');
         const lines = await Promise.all(
-          data.lines.map((line: any) =>
-            tx.purchaseOrderLine.create({
-              data: {
-                tenantId: req.tenantId!,
-                purchaseOrderId: purchaseOrder.id,
-                productId: line.productId,
-                description: line.description,
-                quantity: line.quantity,
-                unitPrice: line.unitPrice,
-                taxRate: line.taxRate,
-                lineTotal: line.quantity * line.unitPrice * (1 + line.taxRate / 100)
+          data.lines.map((line: any) => {
+            // For fixed assets, productId is optional
+            if ((purchaseOrder as any).inventoryType === 'fixed_assets') {
+              return tx.purchaseOrderLine.create({
+                data: {
+                  tenantId: req.tenantId!,
+                  purchaseOrderId: purchaseOrder.id,
+                  productId: line.productId || null, // Allow null for fixed assets
+                  description: line.description,
+                  quantity: line.quantity,
+                  unitPrice: line.unitPrice,
+                  taxRate: line.taxRate,
+                  lineTotal: line.quantity * line.unitPrice * (1 + line.taxRate / 100)
+                }
+              });
+            } else {
+              // For regular assets, productId is required
+              if (!line.productId) {
+                throw new Error('Product selection is required for inventory items');
               }
-            })
-          )
+              return tx.purchaseOrderLine.create({
+                data: {
+                  tenantId: req.tenantId!,
+                  purchaseOrderId: purchaseOrder.id,
+                  productId: line.productId,
+                  description: line.description,
+                  quantity: line.quantity,
+                  unitPrice: line.unitPrice,
+                  taxRate: line.taxRate,
+                  lineTotal: line.quantity * line.unitPrice * (1 + line.taxRate / 100)
+                }
+              });
+            }
+          })
         );
 
+        console.log('🔍 DEBUG: Purchase order lines created successfully');
         return { purchaseOrder, lines };
       });
 
+      console.log('🔍 DEBUG: Transaction completed successfully');
       res.status(201).json(result);
     } catch (error) {
-      console.error('Error creating purchase order:', error);
-      res.status(500).json({ error: 'Failed to create purchase order' });
+      console.error('❌ ERROR creating purchase order:', error);
+      console.error('❌ ERROR stack:', error.stack);
+      res.status(500).json({ error: 'Failed to create purchase order', details: error.message });
     }
   });
 
@@ -427,6 +468,8 @@ export function mountPurchaseOrderRoutes(router: Router) {
             terms: data.terms,
             status: data.status,
             totalAmount,
+            // Inventory Type - using type assertion due to Prisma client generation issue
+            inventoryType: (data as any).inventoryType,
             // Import/Export fields
             purchaseType: data.purchaseType,
             vendorCurrency: data.vendorCurrency,
@@ -439,7 +482,7 @@ export function mountPurchaseOrderRoutes(router: Router) {
             originCountry: data.originCountry,
             destinationCountry: data.destinationCountry,
             portOfEntry: data.portOfEntry
-          }
+          } as any
         });
 
         // Update lines if provided
@@ -451,20 +494,40 @@ export function mountPurchaseOrderRoutes(router: Router) {
 
           // Create new lines
           const lines = await Promise.all(
-            data.lines.map((line: any) =>
-              tx.purchaseOrderLine.create({
-                data: {
-                  tenantId: req.tenantId!,
-                  purchaseOrderId: id,
-                  productId: line.productId,
-                  description: line.description,
-                  quantity: line.quantity,
-                  unitPrice: line.unitPrice,
-                  taxRate: line.taxRate,
-                  lineTotal: line.quantity * line.unitPrice * (1 + line.taxRate / 100)
+            data.lines.map((line: any) => {
+              // For fixed assets, productId is optional
+              if ((existingPO as any).inventoryType === 'fixed_assets') {
+                return tx.purchaseOrderLine.create({
+                  data: {
+                    tenantId: req.tenantId!,
+                    purchaseOrderId: id,
+                    productId: line.productId || null, // Allow null for fixed assets
+                    description: line.description,
+                    quantity: line.quantity,
+                    unitPrice: line.unitPrice,
+                    taxRate: line.taxRate,
+                    lineTotal: line.quantity * line.unitPrice * (1 + line.taxRate / 100)
+                  }
+                });
+              } else {
+                // For regular assets, productId is required
+                if (!line.productId) {
+                  throw new Error('Product selection is required for inventory items');
                 }
-              })
-            )
+                return tx.purchaseOrderLine.create({
+                  data: {
+                    tenantId: req.tenantId!,
+                    purchaseOrderId: id,
+                    productId: line.productId,
+                    description: line.description,
+                    quantity: line.quantity,
+                    unitPrice: line.unitPrice,
+                    taxRate: line.taxRate,
+                    lineTotal: line.quantity * line.unitPrice * (1 + line.taxRate / 100)
+                  }
+                });
+              }
+            })
           );
 
           return { purchaseOrder, lines };
@@ -493,11 +556,17 @@ export function mountPurchaseOrderRoutes(router: Router) {
   });
 
   // Create receipt for purchase order
-  router.post('/purchase-orders/:id/receipts', validateBody(purchaseOrderSchemas.receipt), async (req: TenantRequest, res) => {
+  router.post('/purchase-orders/:id/receipts', async (req: TenantRequest, res) => {
+    console.log('🚀 RECEIPT ROUTE HIT - Starting receipt creation');
+    try {
     const { id } = req.params;
     const data = req.body as any;
     
-    try {
+      console.log('🔍 DEBUG: Receipt creation started');
+      console.log('🔍 DEBUG: Purchase Order ID:', id);
+      console.log('🔍 DEBUG: Receipt data:', JSON.stringify(data, null, 2));
+      console.log('🔍 DEBUG: Tenant ID:', req.tenantId);
+      console.log('🔍 DEBUG: Company ID:', req.header('x-company-id'));
       const result = await prisma.$transaction(async (tx) => {
         // Verify purchase order exists
         const purchaseOrder = await tx.purchaseOrder.findFirst({
@@ -519,7 +588,7 @@ export function mountPurchaseOrderRoutes(router: Router) {
             receivedBy: data.receivedBy,
             notes: data.notes,
             partialReceipt: false // Will be calculated based on items
-          }
+          } as any
         });
 
         // Create receipt items
@@ -585,8 +654,13 @@ export function mountPurchaseOrderRoutes(router: Router) {
               }
             });
 
-            // Update inventory stock quantity if product is linked
+            // Update inventory based on inventory type
             if (poLine.productId) {
+              if ((purchaseOrder as any).inventoryType === 'fixed_assets') {
+                // Skip fixed assets processing in transaction - will handle separately
+                console.log('🔍 Fixed assets will be processed after transaction');
+              } else {
+                // Handle normal assets inventory (existing logic)
               const product = await tx.product.findUnique({
                 where: { 
                   id: poLine.productId,
@@ -624,6 +698,10 @@ export function mountPurchaseOrderRoutes(router: Router) {
                   }
                 });
               }
+              }
+            } else if ((purchaseOrder as any).inventoryType === 'fixed_assets') {
+              // For fixed assets without productId, we'll handle them in the fixed assets processing section
+              console.log('🔍 Fixed assets without productId will be processed after transaction');
             }
           }
         }
@@ -631,10 +709,118 @@ export function mountPurchaseOrderRoutes(router: Router) {
         return { receipt, items, receivingStatus };
       });
 
-      res.status(201).json(result);
+      // SIMPLE FIXED ASSETS PROCESSING - ALWAYS RUN AFTER RECEIPT
+      let fixedAssetsDebug = '🚀 SIMPLE FIXED ASSETS PROCESSING STARTED';
+      
+      try {
+        // Get purchase order to check inventory type
+        const po = await prisma.purchaseOrder.findFirst({
+          where: { id, tenantId: req.tenantId! }
+        });
+        
+        fixedAssetsDebug += ` | PO Found: ${po ? 'YES' : 'NO'}`;
+        if (po) {
+          fixedAssetsDebug += ` | Inventory Type: ${(po as any).inventoryType}`;
+        }
+        
+        if (po && (po as any).inventoryType === 'fixed_assets') {
+          fixedAssetsDebug += ' | Processing FIXED ASSETS';
+          
+          // Use a separate transaction to ensure fixed assets are committed
+          await prisma.$transaction(async (tx) => {
+            for (const item of data.items) {
+              fixedAssetsDebug += ` | Processing: ${item.description} (Qty: ${item.quantityAccepted})`;
+              
+              // Get purchase order line
+              const poLine = await tx.purchaseOrderLine.findUnique({
+                where: { id: item.purchaseOrderLineId }
+              });
+              
+              if (poLine) {
+                // Create or get default category
+                let defaultCategory = await tx.fixedAssetCategory.findFirst({
+                  where: {
+                    tenantId: req.tenantId!,
+                    companyId: po.companyId,
+                    name: 'General Equipment'
+                  }
+                });
+                
+                if (!defaultCategory) {
+                  defaultCategory = await tx.fixedAssetCategory.create({
+                    data: {
+                      tenantId: req.tenantId!,
+                      companyId: po.companyId,
+                      name: 'General Equipment',
+                      usefulLifeMonths: 60,
+                      method: 'straight_line',
+                      salvageRate: 0.1
+                    }
+                  });
+                }
+                
+                // Use description as asset name
+                const assetName = item.description || 'Unknown Asset';
+                
+                // Check if asset exists
+                const existingAsset = await tx.fixedAsset.findFirst({
+                  where: {
+                    tenantId: req.tenantId!,
+                    companyId: po.companyId,
+                    name: assetName,
+                    cost: Number(poLine.unitPrice)
+                  }
+                });
+                
+                if (existingAsset) {
+                  // Update existing asset quantity
+                  await tx.fixedAsset.update({
+                    where: { id: existingAsset.id },
+                    data: {
+                      quantity: (existingAsset as any).quantity + item.quantityAccepted
+                    } as any
+                  });
+                  fixedAssetsDebug += ` | UPDATED: ${assetName} -> ${(existingAsset as any).quantity + item.quantityAccepted}`;
+                } else {
+                  // Create new asset
+                  const newAsset = await tx.fixedAsset.create({
+                    data: {
+                      tenantId: req.tenantId!,
+                      companyId: po.companyId,
+                      categoryId: defaultCategory.id,
+                      name: assetName,
+                      cost: Number(poLine.unitPrice),
+                      quantity: item.quantityAccepted,
+                      currency: po.currency,
+                      acquisitionDate: new Date().toISOString().split('T')[0],
+                      startDepreciation: new Date().toISOString().split('T')[0],
+                      salvageValue: Number(poLine.unitPrice) * 0.1,
+                      notes: `Created from PO ${po.poNumber}`,
+                      status: 'POSTED'
+                    } as any
+                  });
+                  fixedAssetsDebug += ` | CREATED: ${assetName} (Qty: ${item.quantityAccepted}) ID: ${newAsset.id}`;
+                }
+              }
+            }
+          });
+        } else {
+          fixedAssetsDebug += ' | Not fixed assets PO - skipping';
+        }
     } catch (error) {
-      console.error('Error creating receipt:', error);
-      res.status(500).json({ error: 'Failed to create receipt' });
+        fixedAssetsDebug += ` | ERROR: ${error.message}`;
+      }
+
+      res.status(201).json({ ...result, fixedAssetsDebug });
+    } catch (error) {
+      console.error('❌ ERROR creating receipt:', error);
+      console.error('❌ ERROR stack:', error.stack);
+      console.error('❌ ERROR details:', JSON.stringify(error, null, 2));
+      res.status(500).json({ 
+        error: 'Failed to create receipt', 
+        details: error.message,
+        stack: error.stack 
+      });
     }
   });
 
@@ -721,7 +907,7 @@ export function mountPurchaseOrderRoutes(router: Router) {
           include: { 
             lines: true,
             receipts: { include: { items: true } }
-          }
+          } as any
         });
 
         if (!purchaseOrder) {
@@ -756,8 +942,8 @@ export function mountPurchaseOrderRoutes(router: Router) {
         } catch {}
         const poTotal = Number(purchaseOrder.totalAmount)
         const billTotal = Number(bill.totalAmount)
-        const receiptQtyTotal = purchaseOrder.receipts.reduce((sum, receipt) =>
-          sum + receipt.items.reduce((itemSum, item) => itemSum + Number(item.quantityAccepted), 0), 0)
+        const receiptQtyTotal = (purchaseOrder as any).receipts.reduce((sum: number, receipt: any) =>
+          sum + (receipt as any).items.reduce((itemSum: number, item: any) => itemSum + Number(item.quantityAccepted), 0), 0)
 
         const diff = Math.abs(poTotal - billTotal)
         const pct = poTotal > 0 ? (diff / poTotal) * 100 : 0
@@ -833,10 +1019,9 @@ export function mountPurchaseOrderRoutes(router: Router) {
       }
 
       // Generate PDF
-      const pdfBuffer = await purchaseOrderPDFService.generatePDF(id, {
-        includeTerms,
-        includeNotes,
-        format
+      const pdfBuffer = await purchaseOrderPDFService.generatePurchaseOrderPDF(id, {
+        includeReceived: true,
+        generatedBy: req.user?.sub
       });
 
       // Set response headers
@@ -880,10 +1065,9 @@ export function mountPurchaseOrderRoutes(router: Router) {
       }
 
       // Generate PDF
-      const pdfBuffer = await purchaseOrderPDFService.generatePDF(id, {
-        includeTerms: true,
-        includeNotes: true,
-        format: 'detailed'
+      const pdfBuffer = await purchaseOrderPDFService.generatePurchaseOrderPDF(id, {
+        includeReceived: true,
+        generatedBy: req.user?.sub
       });
 
       // Send email with PDF attachment
@@ -948,7 +1132,7 @@ export function mountPurchaseOrderRoutes(router: Router) {
             receipt: { 
               purchaseOrderId: id 
             } 
-          }
+          } as any
         });
 
         // Delete receipts (they reference purchase orders)

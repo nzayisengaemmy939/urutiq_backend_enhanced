@@ -12,10 +12,14 @@ export const prisma = new Proxy({} as PrismaClient, {
       prismaInstance = new PrismaClient({
         datasources: {
           db: {
-            url: process.env.DATABASE_URL,
+            url: process.env.DATABASE_URL + "?connection_limit=5&pool_timeout=20",
           },
         },
         log: ['error', 'warn'],
+        transactionOptions: {
+          timeout: 30000, // 30 seconds timeout
+          maxWait: 10000, // 10 seconds max wait
+        },
       });
     }
     return prismaInstance[prop as keyof PrismaClient];

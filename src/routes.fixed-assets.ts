@@ -195,6 +195,109 @@ export function mountFixedAssetRoutes(router: Router) {
     res.json({ assets });
   }));
 
+  // Fixed Asset Movements Routes
+  router.get('/fixed-assets/movements', asyncHandler(async (req: TenantRequest, res) => {
+    const { companyId, assetId, movementType, reference, page = '1', pageSize = '20' } = req.query;
+    const skip = (parseInt(page as string) - 1) * parseInt(pageSize as string);
+    
+    const where: any = {
+      tenantId: req.tenantId,
+      ...(companyId && companyId !== 'undefined' && { companyId: companyId as string }),
+      ...(assetId && assetId !== 'undefined' && { assetId: assetId as string }),
+      ...(movementType && movementType !== 'undefined' && { movementType: movementType as string }),
+      ...(reference && reference !== 'undefined' && { reference: { contains: reference as string } })
+    };
+    
+    const [movements, total] = await Promise.all([
+      prisma.fixedAssetMovement.findMany({
+        where,
+        include: {
+          asset: {
+            select: {
+              id: true,
+              name: true,
+              cost: true,
+              quantity: true,
+              status: true
+            }
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: { movementDate: 'desc' },
+        skip,
+        take: parseInt(pageSize as string)
+      }),
+      prisma.fixedAssetMovement.count({ where })
+    ]);
+    
+    res.json({
+      movements,
+      pagination: {
+        page: parseInt(page as string),
+        pageSize: parseInt(pageSize as string),
+        total,
+        totalPages: Math.ceil(total / parseInt(pageSize as string))
+      }
+    });
+  }));
+
+  // Get movements for a specific asset
+  router.get('/fixed-assets/:id/movements', asyncHandler(async (req: TenantRequest, res) => {
+    const { id } = req.params;
+    const { movementType, page = '1', pageSize = '20' } = req.query;
+    const skip = (parseInt(page as string) - 1) * parseInt(pageSize as string);
+    
+    const where: any = {
+      tenantId: req.tenantId,
+      assetId: id,
+      ...(movementType && { movementType: movementType as string })
+    };
+    
+    const [movements, total] = await Promise.all([
+      prisma.fixedAssetMovement.findMany({
+        where,
+        include: {
+          asset: {
+            select: {
+              id: true,
+              name: true,
+              cost: true,
+              quantity: true,
+              status: true
+            }
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        },
+        orderBy: { movementDate: 'desc' },
+        skip,
+        take: parseInt(pageSize as string)
+      }),
+      prisma.fixedAssetMovement.count({ where })
+    ]);
+    
+    res.json({
+      movements,
+      pagination: {
+        page: parseInt(page as string),
+        pageSize: parseInt(pageSize as string),
+        total,
+        totalPages: Math.ceil(total / parseInt(pageSize as string))
+      }
+    });
+  }));
+
   // Maintenance Records - Must come before /:id route to avoid conflicts
   router.get('/fixed-assets/maintenance', asyncHandler(async (req: TenantRequest, res) => {
     const { companyId, assetId, status, type } = req.query;
