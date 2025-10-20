@@ -1,0 +1,407 @@
+// Payroll System Database Schema Extension
+// Add these models to your existing Prisma schema
+
+// Employee Management Models
+model Employee {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeNumber    String   // Unique employee ID
+  firstName         String
+  lastName          String
+  middleName        String?
+  email             String
+  phone             String?
+  address           String?
+  city              String?
+  state             String?
+  zipCode           String?
+  country           String?
+  dateOfBirth       DateTime?
+  socialSecurityNumber String?
+  emergencyContact  String?
+  emergencyPhone    String?
+  
+  // Employment Details
+  hireDate          DateTime
+  terminationDate   DateTime?
+  employmentStatus  String   @default("active") // active, terminated, on_leave, suspended
+  employmentType    String   @default("full_time") // full_time, part_time, contractor, intern
+  department        String?
+  position          String?
+  managerId         String?
+  manager           Employee? @relation("EmployeeManager", fields: [managerId], references: [id])
+  subordinates      Employee[] @relation("EmployeeManager")
+  
+  // Payroll Settings
+  payFrequency      String   @default("biweekly") // weekly, biweekly, monthly, semimonthly
+  payRate           Decimal  @default(0)
+  payRateType       String   @default("hourly") // hourly, salary, commission, piece_rate
+  overtimeRate      Decimal? // Multiplier for overtime (e.g., 1.5)
+  overtimeThreshold Decimal? // Hours after which overtime applies
+  
+  // Banking Information
+  bankName          String?
+  bankAccountNumber String?
+  bankRoutingNumber String?
+  accountType       String? // checking, savings
+  
+  // Tax Information
+  taxFilingStatus   String? // single, married_filing_jointly, married_filing_separately, head_of_household
+  federalExemptions Int     @default(0)
+  stateExemptions   Int     @default(0)
+  additionalWithholding Decimal @default(0)
+  
+  // Benefits
+  healthInsurance   Boolean  @default(false)
+  dentalInsurance   Boolean  @default(false)
+  visionInsurance   Boolean  @default(false)
+  lifeInsurance      Boolean  @default(false)
+  retirement401k     Boolean  @default(false)
+  retirement401kRate Decimal? // Contribution percentage
+  
+  // Status
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  payrollRecords    PayrollRecord[]
+  payrollDeductions PayrollDeduction[]
+  payrollBenefits   PayrollBenefit[]
+  timeEntries       TimeEntry[]
+  leaveRequests     LeaveRequest[]
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employmentStatus])
+  @@index([tenantId, companyId, department])
+  @@unique([tenantId, companyId, employeeNumber])
+  @@unique([tenantId, companyId, email])
+}
+
+// Payroll Period Management
+model PayrollPeriod {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  periodName        String   // e.g., "2024-01-01 to 2024-01-15"
+  startDate         DateTime
+  endDate           DateTime
+  payDate           DateTime
+  status            String   @default("draft") // draft, processing, completed, cancelled
+  totalGrossPay     Decimal  @default(0)
+  totalNetPay       Decimal  @default(0)
+  totalTaxes        Decimal  @default(0)
+  totalDeductions   Decimal  @default(0)
+  totalBenefits     Decimal  @default(0)
+  employeeCount     Int      @default(0)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  payrollRecords    PayrollRecord[]
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, status])
+  @@index([tenantId, companyId, startDate])
+  @@unique([tenantId, companyId, startDate, endDate])
+}
+
+// Individual Payroll Records
+model PayrollRecord {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeId        String
+  payrollPeriodId   String
+  
+  // Hours and Pay
+  regularHours      Decimal  @default(0)
+  overtimeHours     Decimal  @default(0)
+  doubleTimeHours   Decimal  @default(0)
+  vacationHours     Decimal  @default(0)
+  sickHours         Decimal  @default(0)
+  holidayHours      Decimal  @default(0)
+  
+  // Pay Calculations
+  regularPay        Decimal  @default(0)
+  overtimePay       Decimal  @default(0)
+  doubleTimePay     Decimal  @default(0)
+  vacationPay       Decimal  @default(0)
+  sickPay          Decimal  @default(0)
+  holidayPay       Decimal  @default(0)
+  grossPay         Decimal  @default(0)
+  
+  // Deductions
+  federalTax        Decimal  @default(0)
+  stateTax          Decimal  @default(0)
+  localTax          Decimal  @default(0)
+  socialSecurity    Decimal  @default(0)
+  medicare          Decimal  @default(0)
+  additionalMedicare Decimal @default(0)
+  
+  // Benefits and Deductions
+  healthInsurance   Decimal  @default(0)
+  dentalInsurance   Decimal  @default(0)
+  visionInsurance   Decimal  @default(0)
+  lifeInsurance     Decimal  @default(0)
+  retirement401k    Decimal  @default(0)
+  otherDeductions   Decimal  @default(0)
+  
+  // Totals
+  totalDeductions   Decimal  @default(0)
+  totalTaxes        Decimal  @default(0)
+  netPay           Decimal  @default(0)
+  
+  // Status
+  status           String   @default("draft") // draft, approved, paid, cancelled
+  processedAt      DateTime?
+  paidAt           DateTime?
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  company          Company  @relation(fields: [companyId], references: [id])
+  employee         Employee @relation(fields: [employeeId], references: [id])
+  payrollPeriod    PayrollPeriod @relation(fields: [payrollPeriodId], references: [id])
+  deductions       PayrollDeduction[]
+  benefits         PayrollBenefit[]
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employeeId])
+  @@index([tenantId, companyId, payrollPeriodId])
+  @@index([tenantId, companyId, status])
+  @@unique([tenantId, companyId, employeeId, payrollPeriodId])
+}
+
+// Deductions Management
+model PayrollDeduction {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeId        String
+  payrollRecordId   String?
+  
+  deductionType    String   // federal_tax, state_tax, local_tax, social_security, medicare, health_insurance, etc.
+  description       String
+  amount            Decimal
+  percentage        Decimal? // For percentage-based deductions
+  isPreTax          Boolean  @default(false) // Pre-tax vs post-tax deduction
+  isRecurring       Boolean  @default(true) // Recurring vs one-time deduction
+  
+  // Effective dates
+  effectiveDate     DateTime
+  endDate           DateTime?
+  
+  // Status
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  employee          Employee @relation(fields: [employeeId], references: [id])
+  payrollRecord     PayrollRecord? @relation(fields: [payrollRecordId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employeeId])
+  @@index([tenantId, companyId, deductionType])
+}
+
+// Benefits Management
+model PayrollBenefit {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeId        String
+  payrollRecordId   String?
+  
+  benefitType       String   // health_insurance, dental_insurance, vision_insurance, life_insurance, retirement_401k, etc.
+  description       String
+  employeeContribution Decimal @default(0)
+  employerContribution Decimal @default(0)
+  totalCost         Decimal  @default(0)
+  
+  // Effective dates
+  effectiveDate     DateTime
+  endDate           DateTime?
+  
+  // Status
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  employee          Employee @relation(fields: [employeeId], references: [id])
+  payrollRecord     PayrollRecord? @relation(fields: [payrollRecordId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employeeId])
+  @@index([tenantId, companyId, benefitType])
+}
+
+// Time Tracking
+model TimeEntry {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeId        String
+  
+  date              DateTime
+  clockIn           DateTime?
+  clockOut          DateTime?
+  breakStart        DateTime?
+  breakEnd          DateTime?
+  totalHours        Decimal  @default(0)
+  regularHours      Decimal  @default(0)
+  overtimeHours     Decimal  @default(0)
+  
+  // Status
+  status            String   @default("draft") // draft, submitted, approved, rejected
+  approvedBy        String?
+  approvedAt        DateTime?
+  notes             String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  employee          Employee @relation(fields: [employeeId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employeeId])
+  @@index([tenantId, companyId, date])
+  @@index([tenantId, companyId, status])
+}
+
+// Leave Management
+model LeaveRequest {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeId        String
+  
+  leaveType         String   // vacation, sick, personal, bereavement, maternity, paternity, etc.
+  startDate         DateTime
+  endDate           DateTime
+  totalDays         Decimal
+  reason            String?
+  status            String   @default("pending") // pending, approved, rejected, cancelled
+  
+  // Approval
+  requestedAt       DateTime @default(now())
+  approvedBy        String?
+  approvedAt        DateTime?
+  rejectionReason   String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  employee          Employee @relation(fields: [employeeId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employeeId])
+  @@index([tenantId, companyId, status])
+  @@index([tenantId, companyId, leaveType])
+}
+
+// Tax Settings and Rates
+model PayrollTaxSettings {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  
+  // Federal Tax Settings
+  federalTaxYear    Int
+  federalTaxBrackets Json    // Tax brackets for federal income tax
+  
+  // State Tax Settings
+  stateCode         String?
+  stateTaxYear      Int?
+  stateTaxBrackets  Json?    // State income tax brackets
+  
+  // Local Tax Settings
+  localTaxRate      Decimal? // Local tax rate if applicable
+  
+  // Social Security and Medicare
+  socialSecurityRate Decimal @default(0.062) // 6.2% for 2024
+  socialSecurityWageBase Decimal @default(160200) // 2024 wage base
+  medicareRate      Decimal @default(0.0145) // 1.45% for 2024
+  additionalMedicareRate Decimal @default(0.009) // 0.9% for high earners
+  additionalMedicareThreshold Decimal @default(200000) // Threshold for additional Medicare
+  
+  // FUTA (Federal Unemployment Tax)
+  futaRate          Decimal @default(0.006) // 0.6% for 2024
+  futaWageBase      Decimal @default(7000) // 2024 wage base
+  
+  // SUTA (State Unemployment Tax) - varies by state
+  sutaRate          Decimal?
+  sutaWageBase      Decimal?
+  
+  // Status
+  isActive          Boolean  @default(true)
+  effectiveDate     DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, isActive])
+  @@unique([tenantId, companyId, federalTaxYear])
+}
+
+// Payroll Reports and History
+model PayrollReport {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  
+  reportType        String   // summary, detailed, tax_report, year_end, etc.
+  reportName        String
+  payrollPeriodId   String?
+  generatedAt       DateTime @default(now())
+  generatedBy       String
+  
+  // Report data
+  reportData        Json     // Store report data as JSON
+  totalGrossPay     Decimal  @default(0)
+  totalNetPay        Decimal  @default(0)
+  totalTaxes         Decimal  @default(0)
+  totalDeductions    Decimal  @default(0)
+  employeeCount      Int      @default(0)
+  
+  // File information
+  fileName          String?
+  filePath          String?
+  fileSize          Int?
+  
+  createdAt         DateTime @default(now())
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, reportType])
+  @@index([tenantId, companyId, generatedAt])
+}
+
+// Add these relations to your existing Company model:
+// employees        Employee[]
+// payrollPeriods   PayrollPeriod[]
+// payrollRecords   PayrollRecord[]
+// payrollDeductions PayrollDeduction[]
+// payrollBenefits  PayrollBenefit[]
+// timeEntries      TimeEntry[]
+// leaveRequests    LeaveRequest[]
+// payrollTaxSettings PayrollTaxSettings[]
+// payrollReports   PayrollReport[]

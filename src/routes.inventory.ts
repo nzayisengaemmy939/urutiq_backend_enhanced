@@ -16,7 +16,7 @@ export function mountInventoryRoutes(router: Router) {
     const where: any = { 
       tenantId: req.tenantId, 
       companyId: companyId || undefined,
-      ...(status && status !== 'all' && { status }),
+      status: status && status !== 'all' ? status : 'ACTIVE', // Default to ACTIVE only
       ...(q && { OR: [{ name: { contains: q } }, { sku: { contains: q } }] })
     };
     Object.keys(where).forEach((k) => where[k] === undefined && delete where[k]);
@@ -332,14 +332,50 @@ export function mountInventoryRoutes(router: Router) {
     const { id } = req.params;
     
     try {
-      await prisma.product.delete({
+      // Soft delete: Change status to INACTIVE instead of actually deleting
+      const updatedProduct = await prisma.product.update({
         where: { 
           id,
           tenantId: req.tenantId!
+        },
+        data: {
+          status: 'INACTIVE',
+          updatedAt: new Date()
         }
       });
-      res.status(204).send();
+      
+      res.json({ 
+        message: 'Product deactivated successfully',
+        product: updatedProduct
+      });
     } catch (error) {
+      console.error('Error deactivating product:', error);
+      res.status(404).json({ error: 'Product not found' });
+    }
+  });
+
+  // Restore inactive product (change status back to ACTIVE)
+  router.patch('/products/:id/restore', async (req: TenantRequest, res) => {
+    const { id } = req.params;
+    
+    try {
+      const updatedProduct = await prisma.product.update({
+        where: { 
+          id,
+          tenantId: req.tenantId!
+        },
+        data: {
+          status: 'ACTIVE',
+          updatedAt: new Date()
+        }
+      });
+      
+      res.json({ 
+        message: 'Product restored successfully',
+        product: updatedProduct
+      });
+    } catch (error) {
+      console.error('Error restoring product:', error);
       res.status(404).json({ error: 'Product not found' });
     }
   });

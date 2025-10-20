@@ -56,6 +56,7 @@ import { mountImportShipmentRoutes } from "./routes.import-shipments.js";
 import { mountBankingRoutes } from "./routes.banking.js";
 import { mountInventoryRoutes } from "./routes.inventory.js";
 import { mountPOSRoutes } from "./routes/pos.js";
+import { mountPayrollRoutes } from "./routes.payroll.js";
 import { mountCategoryRoutes } from "./routes.categories.js";
 import { mountMappingRoutes } from "./routes.mappings.js";
 import { mountAiRoutes } from "./routes.ai.js";
@@ -682,6 +683,7 @@ app.use('/api', (() => {
   mountInventoryRoutes(router);
   mountPOSRoutes(router);
   mountCategoryRoutes(router);
+  mountPayrollRoutes(router);
   mountMappingRoutes(router);
   mountAiRoutes(router);
   mountEnhancedAIRoutes(router);

@@ -11,6 +11,93 @@ import { seedCategories } from "./seed-categories";
 
 const prisma = new PrismaClient();
 
+async function seedJournalEntryTypes(tenantId: string, companyId: string) {
+  const existing = await prisma.journalEntryType.count({ where: { tenantId, companyId } });
+  if (existing >= 8) return;
+
+  const entryTypes = [
+    {
+      name: "Sales Invoice",
+      description: "Record sales transactions and revenue",
+      category: "SALES",
+      isSystemGenerated: false,
+      requiresApproval: false,
+      isActive: true
+    },
+    {
+      name: "Purchase Invoice",
+      description: "Record purchase transactions and expenses",
+      category: "EXPENSE",
+      isSystemGenerated: false,
+      requiresApproval: false,
+      isActive: true
+    },
+    {
+      name: "Cash Receipt",
+      description: "Record cash received from customers",
+      category: "SALES",
+      isSystemGenerated: false,
+      requiresApproval: false,
+      isActive: true
+    },
+    {
+      name: "Cash Payment",
+      description: "Record cash paid to vendors",
+      category: "EXPENSE",
+      isSystemGenerated: false,
+      requiresApproval: false,
+      isActive: true
+    },
+    {
+      name: "Bank Transfer",
+      description: "Record transfers between bank accounts",
+      category: "TRANSFER",
+      isSystemGenerated: false,
+      requiresApproval: false,
+      isActive: true
+    },
+    {
+      name: "Depreciation",
+      description: "Record depreciation of fixed assets",
+      category: "DEPRECIATION",
+      isSystemGenerated: false,
+      requiresApproval: false,
+      isActive: true
+    },
+    {
+      name: "Adjustment Entry",
+      description: "Record period-end adjustments",
+      category: "ADJUSTMENT",
+      isSystemGenerated: false,
+      requiresApproval: true,
+      isActive: true
+    },
+    {
+      name: "Accrual Entry",
+      description: "Record accrued expenses and revenues",
+      category: "ACCRUAL",
+      isSystemGenerated: false,
+      requiresApproval: false,
+      isActive: true
+    }
+  ];
+
+  for (const entryType of entryTypes) {
+    const existing = await prisma.journalEntryType.findFirst({ 
+      where: { tenantId, companyId, name: entryType.name } 
+    });
+    if (!existing) {
+      await prisma.journalEntryType.create({ 
+        data: { 
+          tenantId, 
+          companyId, 
+          ...entryType 
+        } as any 
+      });
+    }
+  }
+}
+
 async function ensureCompanies(tenantId: string) {
   const companies = [
     { id: "seed-company-1", name: "Uruti Hub Limited" },
@@ -666,10 +753,13 @@ async function main() {
 
   // per-company account types and COA
   for (const companyId of companyIds) {
-    const typeIds = await seedAccountTypes(tenantId, companyId);
+    const typeIds =     await seedAccountTypes(tenantId, companyId);
     await seedAccounts(tenantId, companyId, typeIds);
     await seedTaxRates(tenantId, companyId);
     await seedCollaborationData(tenantId, companyId);
+    
+    // Seed journal entry types
+    await seedJournalEntryTypes(tenantId, companyId);
     
     // Seed journal entries with realistic data
     await seedJournalEntries(tenantId, companyId);
