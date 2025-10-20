@@ -53,11 +53,15 @@ export function mountPayrollRoutes(router: Router) {
   // Get all employees
   router.get('/employees', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { page = 1, limit = 50, search, department, status } = req.query;
       
       const where: any = {
-        tenantId: req.tenant!.tenantId,
+        tenantId: req.tenantId!,
         companyId,
         isActive: true
       };
@@ -114,13 +118,17 @@ export function mountPayrollRoutes(router: Router) {
   // Get single employee
   router.get('/employees/:id', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { id } = req.params;
       
       const employee = await prisma.employee.findFirst({
         where: {
           id,
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId
         },
         include: {
@@ -160,13 +168,17 @@ export function mountPayrollRoutes(router: Router) {
   // Create employee
   router.post('/employees', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const employeeData = req.body;
       
       // Generate employee number if not provided
       if (!employeeData.employeeNumber) {
         const lastEmployee = await prisma.employee.findFirst({
-          where: { tenantId: req.tenant!.tenantId, companyId },
+          where: { tenantId: req.tenantId!, companyId },
           orderBy: { employeeNumber: 'desc' }
         });
         
@@ -177,7 +189,7 @@ export function mountPayrollRoutes(router: Router) {
       const employee = await prisma.employee.create({
         data: {
           ...employeeData,
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           payRate: new Decimal(employeeData.payRate || 0),
           overtimeRate: employeeData.overtimeRate ? new Decimal(employeeData.overtimeRate) : null,
@@ -197,7 +209,11 @@ export function mountPayrollRoutes(router: Router) {
   // Update employee
   router.put('/employees/:id', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { id } = req.params;
       const updateData = req.body;
       
@@ -221,7 +237,7 @@ export function mountPayrollRoutes(router: Router) {
       const employee = await prisma.employee.update({
         where: {
           id,
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId
         },
         data: updateData
@@ -237,13 +253,17 @@ export function mountPayrollRoutes(router: Router) {
   // Delete employee (soft delete)
   router.delete('/employees/:id', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { id } = req.params;
       
       const employee = await prisma.employee.update({
         where: {
           id,
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId
         },
         data: {
@@ -265,11 +285,15 @@ export function mountPayrollRoutes(router: Router) {
   // Get payroll periods
   router.get('/payroll-periods', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { page = 1, limit = 20, status, year } = req.query;
       
       const where: any = {
-        tenantId: req.tenant!.tenantId,
+        tenantId: req.tenantId!,
         companyId
       };
       
@@ -316,14 +340,18 @@ export function mountPayrollRoutes(router: Router) {
   // Create payroll period
   router.post('/payroll-periods', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { startDate, endDate, payDate } = req.body;
       
       const periodName = `${startDate} to ${endDate}`;
       
       const period = await prisma.payrollPeriod.create({
         data: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           periodName,
           startDate: new Date(startDate),
@@ -344,14 +372,18 @@ export function mountPayrollRoutes(router: Router) {
   // Process payroll for a period
   router.post('/payroll-periods/:id/process', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { id } = req.params;
       
       // Get the payroll period
       const period = await prisma.payrollPeriod.findFirst({
         where: {
           id,
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId
         }
       });
@@ -363,7 +395,7 @@ export function mountPayrollRoutes(router: Router) {
       // Get all active employees
       const employees = await prisma.employee.findMany({
         where: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           isActive: true,
           employmentStatus: 'active'
@@ -417,7 +449,7 @@ export function mountPayrollRoutes(router: Router) {
         // Create payroll record
         const payrollRecord = await prisma.payrollRecord.create({
           data: {
-            tenantId: req.tenant!.tenantId,
+            tenantId: req.tenantId!,
             companyId,
             employeeId: employee.id,
             payrollPeriodId: period.id,
@@ -477,12 +509,16 @@ export function mountPayrollRoutes(router: Router) {
   // Get payroll records for a period
   router.get('/payroll-periods/:id/records', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { id } = req.params;
       
       const records = await prisma.payrollRecord.findMany({
         where: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           payrollPeriodId: id
         },
@@ -513,12 +549,16 @@ export function mountPayrollRoutes(router: Router) {
   // Get time entries for employee
   router.get('/employees/:id/time-entries', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { id } = req.params;
       const { startDate, endDate, page = 1, limit = 50 } = req.query;
       
       const where: any = {
-        tenantId: req.tenant!.tenantId,
+        tenantId: req.tenantId!,
         companyId,
         employeeId: id
       };
@@ -557,7 +597,11 @@ export function mountPayrollRoutes(router: Router) {
   // Create time entry
   router.post('/time-entries', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const timeEntryData = req.body;
       
       // Calculate total hours
@@ -586,7 +630,7 @@ export function mountPayrollRoutes(router: Router) {
       const timeEntry = await prisma.timeEntry.create({
         data: {
           ...timeEntryData,
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           totalHours: new Decimal(totalHours),
           regularHours: new Decimal(regularHours),
@@ -611,11 +655,15 @@ export function mountPayrollRoutes(router: Router) {
   // Generate payroll summary report
   router.get('/reports/payroll-summary', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       const { startDate, endDate, department } = req.query;
       
       const where: any = {
-        tenantId: req.tenant!.tenantId,
+        tenantId: req.tenantId!,
         companyId
       };
       
@@ -679,12 +727,16 @@ export function mountPayrollRoutes(router: Router) {
   // Get payroll dashboard data
   router.get('/dashboard', async (req: TenantRequest, res: Response) => {
     try {
-      const { companyId } = req.tenant!;
+      const companyId = req.header('x-company-id') || String(req.query.companyId || '');
+      
+      if (!companyId) {
+        return res.status(400).json({ error: 'companyId_required', message: 'Company ID is required' });
+      }
       
       // Get employee counts
       const totalEmployees = await prisma.employee.count({
         where: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           isActive: true
         }
@@ -692,7 +744,7 @@ export function mountPayrollRoutes(router: Router) {
       
       const activeEmployees = await prisma.employee.count({
         where: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           isActive: true,
           employmentStatus: 'active'
@@ -702,7 +754,7 @@ export function mountPayrollRoutes(router: Router) {
       // Get recent payroll data
       const recentPeriods = await prisma.payrollPeriod.findMany({
         where: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId
         },
         orderBy: { startDate: 'desc' },
@@ -717,7 +769,7 @@ export function mountPayrollRoutes(router: Router) {
       // Get pending leave requests
       const pendingLeaveRequests = await prisma.leaveRequest.count({
         where: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           status: 'pending'
         }
@@ -726,7 +778,7 @@ export function mountPayrollRoutes(router: Router) {
       // Get recent time entries
       const recentTimeEntries = await prisma.timeEntry.findMany({
         where: {
-          tenantId: req.tenant!.tenantId,
+          tenantId: req.tenantId!,
           companyId,
           date: {
             gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
