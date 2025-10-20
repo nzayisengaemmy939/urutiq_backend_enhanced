@@ -725,7 +725,7 @@ export function mountPayrollRoutes(router: Router) {
   });
 
   // Get payroll dashboard data
-  router.get('/dashboard', async (req: TenantRequest, res: Response) => {
+  router.get('/payroll/dashboard', async (req: TenantRequest, res: Response) => {
     try {
       const companyId = req.header('x-company-id') || String(req.query.companyId || '');
       
