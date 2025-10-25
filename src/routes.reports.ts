@@ -81,14 +81,6 @@ async function calculateReportData(reportId: string, companyId: string, paramete
             where: {
               id: { in: accountIds },
               companyId: companyId
-            },
-            include: {
-              accountType: true,
-              lines: {
-                include: {
-                  entry: true
-                }
-              }
             }
           });
 
@@ -97,38 +89,15 @@ async function calculateReportData(reportId: string, companyId: string, paramete
           const endDate = parameters?.endDate ? new Date(parameters.endDate) : undefined;
 
           value = accounts.reduce((sum, account) => {
-            const balance = account.lines.reduce((acc, entry) => {
-              // dimension filters
-              if (parameters?.department && entry.department !== parameters.department) return acc;
-              if (parameters?.project && entry.project !== parameters.project) return acc;
-              if (parameters?.location && entry.location !== parameters.location) return acc;
-              // date filters on related journal
-              if (hasDateRange) {
-                const d = entry.entry?.date ? new Date(entry.entry.date as any) : undefined;
-                if (startDate && d && d < startDate) return acc;
-                if (endDate && d && d > endDate) return acc;
-              }
-              return acc + (entry.entry.type === 'debit' ? entry.amount : -entry.amount);
-            }, 0);
-            return sum + balance;
+            return sum + Number(account.balance);
           }, 0);
 
           details = accounts.map(account => ({
             id: account.id,
             name: account.name,
             code: account.code,
-            type: account.accountType,
-            balance: account.lines.reduce((acc, entry) => {
-              if (parameters?.department && entry.department !== parameters.department) return acc;
-              if (parameters?.project && entry.project !== parameters.project) return acc;
-              if (parameters?.location && entry.location !== parameters.location) return acc;
-              if (hasDateRange) {
-                const d = entry.entry?.date ? new Date(entry.entry.date as any) : undefined;
-                if (startDate && d && d < startDate) return acc;
-                if (endDate && d && d > endDate) return acc;
-              }
-              return acc + (entry.entry.type === 'debit' ? entry.amount : -entry.amount);
-            }, 0)
+            type: account.typeId,
+            balance: Number(account.balance)
           }));
         }
         break;
