@@ -16,8 +16,8 @@ router.post('/jurisdictions', asyncHandler(async (req: Request, res: Response) =
       return res.status(400).json({ error: 'name, country, and taxType are required' });
     }
     
-    console.log('Creating jurisdiction with Prisma:', { tenantId, companyId, name, country, taxType });
-    
+
+    console.log("testing deployment")
     // Create jurisdiction in database
     const jurisdiction = await prisma.taxJurisdiction.create({
       data: {

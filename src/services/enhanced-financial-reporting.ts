@@ -2,6 +2,7 @@ import { prisma } from '../prisma.js';
 import { Decimal } from '@prisma/client/runtime/library';
 import PDFDocument from 'pdfkit';
 import ExcelJS from 'exceljs';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
 
 // Enhanced Financial Reporting Engine
 export interface FinancialReportingEngine {
@@ -1107,8 +1108,8 @@ export class EnhancedFinancialReportingEngine {
     };
   }
 
-  private async generatePDFReport(report: any): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
+  private async generatePDFReport(report: any, companyId?: string): Promise<Buffer> {
+    return new Promise(async (resolve, reject) => {
       try {
         const doc = new PDFDocument({ margin: 50 });
         const chunks: Buffer[] = [];
@@ -1117,18 +1118,29 @@ export class EnhancedFinancialReportingEngine {
         doc.on('end', () => resolve(Buffer.concat(chunks)));
         doc.on('error', reject);
 
+        // Add company logo if companyId is provided
+        if (companyId) {
+          const company = await getCompanyForPDF('tenant_demo', companyId); // Using default tenant for now
+          if (company?.logoUrl) {
+            await addCompanyLogoToPDF(doc, company, 50, 50, 60, 60);
+          }
+        }
+
+        // Adjust Y position based on whether logo was added
+        const titleY = companyId ? 120 : 50;
+
         // Add title
-        doc.fontSize(20).text('Financial Report', 50, 50);
-        doc.fontSize(12).text(`Generated: ${new Date().toLocaleDateString()}`, 50, 80);
+        doc.fontSize(20).text('Financial Report', 50, titleY);
+        doc.fontSize(12).text(`Generated: ${new Date().toLocaleDateString()}`, 50, titleY + 30);
 
         // Add report content based on type
         if (report.totalAssets !== undefined) {
           // Balance Sheet - Detailed version
-          doc.fontSize(16).text('Balance Sheet', 50, 120);
-          doc.fontSize(10).text(`As of: ${report.date ? new Date(report.date).toLocaleDateString() : new Date().toLocaleDateString()}`, 50, 140);
+          doc.fontSize(16).text('Balance Sheet', 50, titleY + 60);
+          doc.fontSize(10).text(`As of: ${report.date ? new Date(report.date).toLocaleDateString() : new Date().toLocaleDateString()}`, 50, titleY + 80);
           doc.fontSize(12);
           
-          let yPosition = 170;
+          let yPosition = titleY + 110;
           
           // Assets Section
           if (report.assets) {

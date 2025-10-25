@@ -3,6 +3,7 @@ import { prisma } from './prisma.js';
 import { TenantRequest } from './tenant.js';
 import { Decimal } from '@prisma/client/runtime/library';
 import PDFDocument from 'pdfkit';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
 
 // Enhanced Payroll calculation utilities
 class PayrollCalculator {
@@ -1002,6 +1003,11 @@ export function mountPayrollRoutes(router: Router) {
         const lightGray = '#f9fafb'; // Light background
         const successColor = '#10b981'; // Green for approved status
 
+        // Add company logo (top left)
+        if (company?.logoUrl) {
+          await addCompanyLogoToPDF(doc, company, 50, 50, 60, 60);
+        }
+
         // Company info (left side) - Use actual company data
         const companyName = company?.name || 'Your Company';
         const companyAddress = company?.address || '123 Business St';
@@ -1011,15 +1017,18 @@ export function mountPayrollRoutes(router: Router) {
         const companyEmail = company?.email || 'hr@company.com';
         const companyPhone = company?.phone || '+1-555-0123';
 
+        // Adjust Y position based on whether logo was added
+        const companyInfoY = company?.logoUrl ? 120 : 50;
+
         // Top row: Company name, Payroll Report, and Status Badge with proper spacing
         doc.fontSize(20)
            .fillColor(primaryColor)
-           .text(companyName, 50, 50); // Company name on the left
+           .text(companyName, 50, companyInfoY); // Company name on the left
         
         // Payroll Report with padding from company name
         doc.fontSize(20)
            .fillColor(primaryColor)
-           .text('PAYROLL REPORT', 300, 50); // Moved right for padding (was 250)
+           .text('PAYROLL REPORT', 300, companyInfoY); // Moved right for padding (was 250)
         
         // Status badge under PAYROLL REPORT (no text, just colored badge)
         const statusColor = period.status === 'approved' ? successColor : 
@@ -1027,7 +1036,7 @@ export function mountPayrollRoutes(router: Router) {
                            period.status === 'draft' ? '#6b7280' : textColor;
         
         doc.fillColor(statusColor)
-           .rect(300, 75, 80, 25) // Status badge under PAYROLL REPORT (moved right)
+           .rect(300, companyInfoY + 25, 80, 25) // Status badge under PAYROLL REPORT (moved right)
            .fill();
         
         // No text in status badge - just the colored rectangle
@@ -1035,20 +1044,20 @@ export function mountPayrollRoutes(router: Router) {
         // Company details below the main row
         doc.fontSize(10)
            .fillColor(textColor)
-           .text(companyAddress, 50, 110) // Moved down to avoid status badge
-           .text(`${companyCity}, ${companyState} ${companyPostalCode}`, 50, 125)
-           .text(`Email: ${companyEmail}`, 50, 140)
-           .text(`Phone: ${companyPhone}`, 50, 155);
+           .text(companyAddress, 50, companyInfoY + 50) // Moved down to avoid status badge
+           .text(`${companyCity}, ${companyState} ${companyPostalCode}`, 50, companyInfoY + 65)
+           .text(`Email: ${companyEmail}`, 50, companyInfoY + 80)
+           .text(`Phone: ${companyPhone}`, 50, companyInfoY + 95);
 
         // Period information below company details
         doc.fontSize(14)
            .fillColor(textColor)
-           .text(period.periodName, 50, 180); // Period date below company info
+           .text(period.periodName, 50, companyInfoY + 120); // Period date below company info
 
         // Line separator
         doc.fillColor(textColor)
-           .moveTo(50, 200) // Moved down to accommodate status badge
-           .lineTo(545, 200)
+           .moveTo(50, companyInfoY + 150) // Moved down to accommodate status badge
+           .lineTo(545, companyInfoY + 150)
            .stroke();
 
         // Period details section

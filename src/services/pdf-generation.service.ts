@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { prisma } from '../prisma.js';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
 
 export interface JournalEntryPDFData {
   entry: {
@@ -24,6 +25,7 @@ export interface JournalEntryPDFData {
       address?: string;
       phone?: string;
       email?: string;
+      logoUrl?: string;
     };
   };
   lines: Array<{
@@ -115,8 +117,25 @@ export class PDFGenerationService {
           }
           
           .company-header {
-            text-align: center;
-            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+          }
+          
+          .company-logo {
+            width: 60px;
+            height: 60px;
+            margin-right: 20px;
+            border-radius: 8px;
+            object-fit: cover;
+          }
+          
+          .company-info {
+            flex: 1;
           }
           
           .company-name {
@@ -129,13 +148,15 @@ export class PDFGenerationService {
           .company-details {
             font-size: 14px;
             color: #6b7280;
+            margin-bottom: 3px;
           }
           
           .document-title {
             font-size: 28px;
             font-weight: bold;
-            color: #1f2937;
-            text-align: center;
+            color: #009688;
+            text-align: right;
+            margin-top: -10px;
             margin-bottom: 10px;
           }
           
@@ -357,14 +378,18 @@ export class PDFGenerationService {
         <div class="container">
           ${includeCompanyHeader && entry.company ? `
             <div class="company-header">
-              <div class="company-name">${entry.company.name}</div>
-              ${entry.company.address ? `<div class="company-details">${entry.company.address}</div>` : ''}
-              ${entry.company.phone ? `<div class="company-details">Phone: ${entry.company.phone}</div>` : ''}
-              ${entry.company.email ? `<div class="company-details">Email: ${entry.company.email}</div>` : ''}
+              ${entry.company.logoUrl ? `<img src="${entry.company.logoUrl}" alt="Company Logo" class="company-logo" />` : ''}
+              <div class="company-info">
+                <div class="company-name">${entry.company.name}</div>
+                ${entry.company.address ? `<div class="company-details">${entry.company.address}</div>` : ''}
+                ${entry.company.phone ? `<div class="company-details">Phone: ${entry.company.phone}</div>` : ''}
+                ${entry.company.email ? `<div class="company-details">Email: ${entry.company.email}</div>` : ''}
+              </div>
+              <div class="document-title">JOURNAL ENTRY</div>
             </div>
-          ` : ''}
-          
-          <div class="document-title">Journal Entry</div>
+          ` : `
+            <div class="document-title">JOURNAL ENTRY</div>
+          `}
           
           <div class="entry-header">
             <div class="entry-info">
@@ -528,7 +553,13 @@ export class PDFGenerationService {
           isBalanced,
           createdBy: entry.createdBy || undefined,
           entryType: entry.entryType || undefined,
-          company: entry.company || undefined
+          company: entry.company ? {
+            name: entry.company.name,
+            address: entry.company.address,
+            phone: entry.company.phone,
+            email: entry.company.email,
+            logoUrl: entry.company.logoUrl
+          } : undefined
         },
         lines: (entry.lines || []).map((line: any) => ({
           account: {

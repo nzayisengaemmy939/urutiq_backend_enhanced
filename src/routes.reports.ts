@@ -22,6 +22,7 @@ import ExcelJS from 'exceljs';
 import nodemailer from 'nodemailer';
 import { IncomingWebhook } from '@slack/webhook';
 import { Parser } from 'expr-eval';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -404,10 +405,22 @@ async function generateReportOutput(format: 'pdf' | 'excel' | 'csv' | 'json', da
     case 'pdf': {
       const doc = new PDFDocument({ margin: 40 });
       const chunks: Buffer[] = [];
-      return await new Promise((resolve, reject) => {
+      return await new Promise(async (resolve, reject) => {
         doc.on('data', (c: Buffer) => chunks.push(c));
         doc.on('end', () => resolve({ contentType: 'application/pdf', buffer: Buffer.concat(chunks) }));
         doc.on('error', reject);
+        
+        // Add company logo if companyId is available
+        if (data?.companyId) {
+          const company = await getCompanyForPDF('tenant_demo', data.companyId); // Using default tenant for now
+          if (company?.logoUrl) {
+            await addCompanyLogoToPDF(doc, company, 40, 40, 50, 50);
+          }
+        }
+        
+        // Adjust Y position based on whether logo was added
+        const titleY = data?.companyId ? 100 : 40;
+        
         doc.fontSize(18).text(String(data?.report?.name || 'Report'), { underline: true });
         doc.moveDown();
         doc.fontSize(12).text(`Type: ${String(data?.report?.type || '')}`);

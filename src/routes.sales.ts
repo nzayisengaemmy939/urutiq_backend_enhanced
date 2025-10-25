@@ -11,6 +11,7 @@ import nodemailer from 'nodemailer';
 import multer from 'multer';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
 
 // Configure multer for PDF file uploads
 const upload = multer({
@@ -53,6 +54,9 @@ export function mountSalesRoutes(router: Router) {
     if (!inv) throw new Error('invoice_not_found');
     const lines = await prisma.invoiceLine.findMany({ where: { invoiceId, tenantId } });
 
+    // Get company data with logo
+    const company = await getCompanyForPDF(tenantId, inv.companyId);
+
     return new Promise(async (resolve, reject) => {
       try {
         const doc = new PDFDocument({ size: 'A4', margin: 50 });
@@ -71,17 +75,33 @@ export function mountSalesRoutes(router: Router) {
         const textColor = '#374151';
         const lightGray = '#f9fafb';
 
-        // Company info (left side)
+        // Add company logo (top left)
+        if (company?.logoUrl) {
+          await addCompanyLogoToPDF(doc, company, 50, 50, 60, 60);
+        }
+
+        // Company info (left side, below logo)
+        const companyName = company?.name || 'Your Company';
+        const companyAddress = company?.address || '123 Business St';
+        const companyCity = company?.city || 'City';
+        const companyState = company?.state || 'State';
+        const companyPostalCode = company?.postalCode || '12345';
+        const companyEmail = company?.email || 'info@company.com';
+        const companyPhone = company?.phone || '+1-555-0123';
+
+        // Adjust Y position based on whether logo was added
+        const companyInfoY = company?.logoUrl ? 120 : 50;
+
         doc.fontSize(24)
            .fillColor(primaryColor)
-           .text('Your Company', 50, 50);
+           .text(companyName, 50, companyInfoY);
         
         doc.fontSize(10)
            .fillColor(textColor)
-           .text('123 Business St', 50, 80)
-           .text('City, State 12345', 50, 95)
-           .text('Email: info@company.com', 50, 110)
-           .text('Phone: +1-555-0123', 50, 125);
+           .text(companyAddress, 50, companyInfoY + 30)
+           .text(`${companyCity}, ${companyState} ${companyPostalCode}`, 50, companyInfoY + 45)
+           .text(`Email: ${companyEmail}`, 50, companyInfoY + 60)
+           .text(`Phone: ${companyPhone}`, 50, companyInfoY + 75);
 
         // Invoice header (right side)
         doc.fontSize(28)

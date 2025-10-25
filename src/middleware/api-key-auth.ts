@@ -19,7 +19,7 @@ export const apiKeyAuthMiddleware = (requiredPermissions?: string[]) => {
   return async (req: ApiKeyRequest, res: Response, next: NextFunction) => {
     try {
       const authHeader = req.headers.authorization;
-      
+      console.log("test")
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         throw new ApiError(401, 'MISSING_API_KEY', 'API key is required');
       }
