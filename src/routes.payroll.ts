@@ -3,7 +3,7 @@ import { prisma } from './prisma.js';
 import { TenantRequest } from './tenant.js';
 import { Decimal } from '@prisma/client/runtime/library';
 import PDFDocument from 'pdfkit';
-import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper.js';
+import { addCompanyLogoToPDF, getCompanyForPDF } from './utils/pdf-logo-helper.js';
 
 // Enhanced Payroll calculation utilities
 class PayrollCalculator {
