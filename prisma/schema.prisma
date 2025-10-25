@@ -75,8 +75,13 @@ model Company {
   payrollBenefits  PayrollBenefit[]
   timeEntries      TimeEntry[]
   leaveRequests    LeaveRequest[]
+  bonuses          Bonus[]
+  deductionTypes   DeductionType[]
+  payrollCompliance PayrollCompliance[]
+  payrollAuditLogs PayrollAuditLog[]
   payrollTaxSettings PayrollTaxSettings[]
   payrollReports   PayrollReport[]
+  salaryHistory    SalaryHistory[]
   goodsReceivedNotes GoodsReceivedNote[]
   invoiceApprovals InvoiceApproval[]
   paymentSchedules PaymentSchedule[]
@@ -5414,6 +5419,48 @@ model AutoReconciliation {
 
 // Payroll System Models
 
+// Salary History Management
+model SalaryHistory {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeId        String
+  
+  // Salary Details
+  basicSalary       Decimal
+  salaryCurrency    String   @default("USD")
+  payFrequency      String   // weekly, biweekly, semimonthly, monthly
+  
+  // Effective Dates
+  effectiveDate     DateTime
+  endDate           DateTime?
+  
+  // Change Details
+  changeType        String   // raise, adjustment, promotion, demotion, cost_of_living
+  changeReason      String?
+  changeAmount      Decimal? // Amount of change (positive for raises, negative for reductions)
+  changePercentage  Decimal? // Percentage change
+  
+  // Approval
+  approvedBy        String?
+  approvedAt        DateTime?
+  status            String   @default("active") // active, inactive, pending_approval
+  
+  // Metadata
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  employee          Employee @relation(fields: [employeeId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employeeId])
+  @@index([tenantId, companyId, effectiveDate])
+  @@index([tenantId, companyId, status])
+}
+
 // Employee Management Models
 model Employee {
   id                String   @id @default(cuid())
@@ -5450,8 +5497,25 @@ model Employee {
   payFrequency      String   @default("biweekly") // weekly, biweekly, monthly, semimonthly
   payRate           Decimal  @default(0)
   payRateType       String   @default("hourly") // hourly, salary, commission, piece_rate
+  basicSalary       Decimal? // Monthly basic salary amount
+  salaryCurrency    String?  @default("USD") // Currency for salary
+  salaryEffectiveDate DateTime? // When salary becomes effective
   overtimeRate      Decimal? // Multiplier for overtime (e.g., 1.5)
   overtimeThreshold Decimal? // Hours after which overtime applies
+  
+  // Advanced Pay Settings
+  shiftDifferentialRate Decimal? // Night/weekend shift premium rate
+  hazardPayRate         Decimal? // Hazardous work premium rate
+  onCallPayRate         Decimal? // On-call standby pay rate
+  travelPayRate         Decimal? // Business travel pay rate
+  pieceRate             Decimal? // Production-based pay rate
+  
+  // Bonus & Commission Settings
+  bonusEligible         Boolean  @default(false)
+  commissionRate        Decimal? // Sales commission percentage
+  commissionThreshold   Decimal? // Minimum sales for commission
+  retentionBonusAmount  Decimal? // Sign-on/retention bonus
+  performanceBonusRate  Decimal? // Performance-based bonus rate
   
   // Banking Information
   bankName          String?
@@ -5473,6 +5537,16 @@ model Employee {
   retirement401k     Boolean  @default(false)
   retirement401kRate Decimal? // Contribution percentage
   
+  // Advanced Benefits
+  flexibleSpendingAccount Boolean @default(false)
+  healthSavingsAccount    Boolean @default(false)
+  stockOptions            Boolean @default(false)
+  tuitionReimbursement    Boolean @default(false)
+  companyCar              Boolean @default(false)
+  parkingAllowance        Decimal? // Monthly parking allowance
+  mealAllowance           Decimal? // Daily meal allowance
+  uniformAllowance        Decimal? // Uniform/equipment allowance
+  
   // Status
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
@@ -5485,6 +5559,8 @@ model Employee {
   payrollBenefits   PayrollBenefit[]
   timeEntries       TimeEntry[]
   leaveRequests     LeaveRequest[]
+  bonuses           Bonus[]
+  salaryHistory     SalaryHistory[]
   
   @@index([tenantId, companyId])
   @@index([tenantId, companyId, employmentStatus])
@@ -5538,6 +5614,10 @@ model PayrollRecord {
   vacationHours     Decimal  @default(0)
   sickHours         Decimal  @default(0)
   holidayHours      Decimal  @default(0)
+  shiftDifferentialHours Decimal @default(0)
+  hazardPayHours    Decimal  @default(0)
+  onCallHours       Decimal  @default(0)
+  travelHours       Decimal  @default(0)
   
   // Pay Calculations
   regularPay        Decimal  @default(0)
@@ -5546,6 +5626,13 @@ model PayrollRecord {
   vacationPay       Decimal  @default(0)
   sickPay          Decimal  @default(0)
   holidayPay       Decimal  @default(0)
+  shiftDifferentialPay Decimal @default(0)
+  hazardPay        Decimal  @default(0)
+  onCallPay        Decimal  @default(0)
+  travelPay        Decimal  @default(0)
+  pieceRatePay     Decimal  @default(0)
+  bonusAmount      Decimal  @default(0)
+  commissionAmount Decimal  @default(0)
   grossPay         Decimal  @default(0)
   
   // Deductions
@@ -5555,6 +5642,22 @@ model PayrollRecord {
   socialSecurity    Decimal  @default(0)
   medicare          Decimal  @default(0)
   additionalMedicare Decimal @default(0)
+  unemploymentTax   Decimal  @default(0)
+  workersCompTax    Decimal  @default(0)
+  
+  // Legal Deductions
+  childSupport      Decimal  @default(0)
+  wageGarnishment   Decimal  @default(0)
+  courtOrder        Decimal  @default(0)
+  taxLevy           Decimal  @default(0)
+  
+  // Voluntary Deductions
+  unionDues         Decimal  @default(0)
+  parkingFees       Decimal  @default(0)
+  mealPlan          Decimal  @default(0)
+  uniformFees       Decimal  @default(0)
+  loanRepayment     Decimal  @default(0)
+  charityDonation   Decimal  @default(0)
   
   // Benefits and Deductions
   healthInsurance   Decimal  @default(0)
@@ -5562,6 +5665,14 @@ model PayrollRecord {
   visionInsurance   Decimal  @default(0)
   lifeInsurance     Decimal  @default(0)
   retirement401k    Decimal  @default(0)
+  flexibleSpendingAccount Decimal @default(0)
+  healthSavingsAccount    Decimal @default(0)
+  stockOptions      Decimal  @default(0)
+  tuitionReimbursement Decimal @default(0)
+  companyCar        Decimal  @default(0)
+  parkingAllowance  Decimal  @default(0)
+  mealAllowance     Decimal  @default(0)
+  uniformAllowance  Decimal  @default(0)
   otherDeductions   Decimal  @default(0)
   
   // Totals
@@ -5583,6 +5694,7 @@ model PayrollRecord {
   payrollPeriod    PayrollPeriod @relation(fields: [payrollPeriodId], references: [id])
   deductions       PayrollDeduction[]
   benefits         PayrollBenefit[]
+  bonuses          Bonus[]
   
   @@index([tenantId, companyId])
   @@index([tenantId, companyId, employeeId])
@@ -5599,7 +5711,7 @@ model PayrollDeduction {
   employeeId        String
   payrollRecordId   String?
   
-  deductionType    String   // federal_tax, state_tax, local_tax, social_security, medicare, health_insurance, etc.
+  deductionCategory    String   // federal_tax, state_tax, local_tax, social_security, medicare, health_insurance, etc.
   description       String
   amount            Decimal
   percentage        Decimal? // For percentage-based deductions
@@ -5619,10 +5731,12 @@ model PayrollDeduction {
   company           Company  @relation(fields: [companyId], references: [id])
   employee          Employee @relation(fields: [employeeId], references: [id])
   payrollRecord     PayrollRecord? @relation(fields: [payrollRecordId], references: [id])
+  deductionType     DeductionType? @relation(fields: [deductionTypeId], references: [id])
+  deductionTypeId   String?
   
   @@index([tenantId, companyId])
   @@index([tenantId, companyId, employeeId])
-  @@index([tenantId, companyId, deductionType])
+  @@index([tenantId, companyId, deductionTypeId])
 }
 
 // Benefits Management
@@ -5724,6 +5838,124 @@ model LeaveRequest {
   @@index([tenantId, companyId, employeeId])
   @@index([tenantId, companyId, status])
   @@index([tenantId, companyId, leaveType])
+}
+
+// Bonus Management
+model Bonus {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  employeeId        String
+  payrollRecordId   String?
+  
+  bonusType         String   // performance, holiday, retention, commission, referral, etc.
+  description       String
+  amount            Decimal
+  percentage        Decimal? // For percentage-based bonuses
+  effectiveDate     DateTime
+  endDate           DateTime?
+  
+  // Approval
+  status            String   @default("pending") // pending, approved, paid, cancelled
+  approvedBy        String?
+  approvedAt        DateTime?
+  rejectionReason   String?
+  
+  // Status
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  employee          Employee @relation(fields: [employeeId], references: [id])
+  payrollRecord     PayrollRecord? @relation(fields: [payrollRecordId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, employeeId])
+  @@index([tenantId, companyId, bonusType])
+  @@index([tenantId, companyId, status])
+}
+
+// Deduction Types Management
+model DeductionType {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  
+  name              String
+  description       String?
+  category          String   // legal, voluntary, benefit, tax
+  isPreTax          Boolean  @default(false)
+  isRecurring       Boolean  @default(true)
+  hasLimit          Boolean  @default(false)
+  annualLimit       Decimal?
+  monthlyLimit      Decimal?
+  percentage        Decimal? // For percentage-based deductions
+  
+  // Status
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  deductions        PayrollDeduction[]
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, category])
+  @@unique([tenantId, companyId, name])
+}
+
+// Compliance & Reporting
+model PayrollCompliance {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  
+  complianceType    String   // w2_generation, w4_update, i9_verification, labor_law_check
+  description       String
+  status            String   @default("pending") // pending, completed, failed, expired
+  dueDate           DateTime?
+  completedAt       DateTime?
+  notes             String?
+  
+  // Status
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, complianceType])
+  @@index([tenantId, companyId, status])
+}
+
+// Audit Trail
+model PayrollAuditLog {
+  id                String   @id @default(cuid())
+  tenantId          String
+  companyId         String
+  
+  action            String   // create, update, delete, process, approve, etc.
+  entityType        String   // employee, payroll_record, bonus, deduction, etc.
+  entityId          String
+  oldValues         Json?    // Previous values
+  newValues         Json?    // New values
+  performedBy       String   // User ID who performed the action
+  performedAt       DateTime @default(now())
+  ipAddress         String?
+  userAgent         String?
+  notes             String?
+  
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id])
+  
+  @@index([tenantId, companyId])
+  @@index([tenantId, companyId, entityType])
+  @@index([tenantId, companyId, performedAt])
 }
 
 // Tax Settings and Rates
