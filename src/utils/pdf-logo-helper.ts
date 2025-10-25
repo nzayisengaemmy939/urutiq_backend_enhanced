@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit';
-import mongoService from '../config/mongodb';
+import mongoService from '../config/mongodb.js';
 import { ObjectId } from 'mongodb';
 import { prisma } from '../prisma.js';
 
