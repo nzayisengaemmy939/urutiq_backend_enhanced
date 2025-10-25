@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit';
-import mongoService from '../config/mongodb.js';
+import mongoService from '../config/mongodb';
 import { ObjectId } from 'mongodb';
 import { prisma } from '../prisma.js';
 
@@ -14,7 +14,7 @@ import { prisma } from '../prisma.js';
  * @returns Promise<boolean> - true if logo was added, false otherwise
  */
 export async function addCompanyLogoToPDF(
-  doc: PDFDocument, 
+  doc: InstanceType<typeof PDFDocument>, 
   company: any, 
   x: number = 50, 
   y: number = 50, 

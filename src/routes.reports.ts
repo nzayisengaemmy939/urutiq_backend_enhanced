@@ -22,10 +22,9 @@ import ExcelJS from 'exceljs';
 import nodemailer from 'nodemailer';
 import { IncomingWebhook } from '@slack/webhook';
 import { Parser } from 'expr-eval';
-import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper.js';
+import { addCompanyLogoToPDF, getCompanyForPDF } from './utils/pdf-logo-helper.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // Minimal audit helper
 async function audit(tenantId: string | undefined, userId: string | undefined, action: string, meta?: any) {
@@ -71,7 +70,7 @@ async function calculateReportData(reportId: string, companyId: string, paramete
   };
 
   for (const item of report.reportItems) {
-    let value = 0;
+    let value: number | string = 0;
     let details: any[] = [];
 
     switch (item.type) {
@@ -85,9 +84,9 @@ async function calculateReportData(reportId: string, companyId: string, paramete
             },
             include: {
               accountType: true,
-              journalEntries: {
+              lines: {
                 include: {
-                  journal: true
+                  entry: true
                 }
               }
             }
@@ -98,18 +97,18 @@ async function calculateReportData(reportId: string, companyId: string, paramete
           const endDate = parameters?.endDate ? new Date(parameters.endDate) : undefined;
 
           value = accounts.reduce((sum, account) => {
-            const balance = account.journalEntries.reduce((acc, entry) => {
+            const balance = account.lines.reduce((acc, entry) => {
               // dimension filters
               if (parameters?.department && entry.department !== parameters.department) return acc;
               if (parameters?.project && entry.project !== parameters.project) return acc;
               if (parameters?.location && entry.location !== parameters.location) return acc;
               // date filters on related journal
               if (hasDateRange) {
-                const d = entry.journal?.date ? new Date(entry.journal.date as any) : undefined;
+                const d = entry.entry?.date ? new Date(entry.entry.date as any) : undefined;
                 if (startDate && d && d < startDate) return acc;
                 if (endDate && d && d > endDate) return acc;
               }
-              return acc + (entry.journal.type === 'debit' ? entry.amount : -entry.amount);
+              return acc + (entry.entry.type === 'debit' ? entry.amount : -entry.amount);
             }, 0);
             return sum + balance;
           }, 0);
@@ -118,17 +117,17 @@ async function calculateReportData(reportId: string, companyId: string, paramete
             id: account.id,
             name: account.name,
             code: account.code,
-            type: account.accountType.name,
-            balance: account.journalEntries.reduce((acc, entry) => {
+            type: account.accountType,
+            balance: account.lines.reduce((acc, entry) => {
               if (parameters?.department && entry.department !== parameters.department) return acc;
               if (parameters?.project && entry.project !== parameters.project) return acc;
               if (parameters?.location && entry.location !== parameters.location) return acc;
               if (hasDateRange) {
-                const d = entry.journal?.date ? new Date(entry.journal.date as any) : undefined;
+                const d = entry.entry?.date ? new Date(entry.entry.date as any) : undefined;
                 if (startDate && d && d < startDate) return acc;
                 if (endDate && d && d > endDate) return acc;
               }
-              return acc + (entry.journal.type === 'debit' ? entry.amount : -entry.amount);
+              return acc + (entry.entry.type === 'debit' ? entry.amount : -entry.amount);
             }, 0)
           }));
         }
