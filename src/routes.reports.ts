@@ -22,7 +22,7 @@ import ExcelJS from 'exceljs';
 import nodemailer from 'nodemailer';
 import { IncomingWebhook } from '@slack/webhook';
 import { Parser } from 'expr-eval';
-import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper.js';
 
 const router = Router();
 const prisma = new PrismaClient();

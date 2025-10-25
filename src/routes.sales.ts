@@ -11,7 +11,7 @@ import nodemailer from 'nodemailer';
 import multer from 'multer';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
-import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper.js';
 
 // Configure multer for PDF file uploads
 const upload = multer({

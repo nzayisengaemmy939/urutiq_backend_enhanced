@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 import { prisma } from '../prisma.js';
-import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper';
+import { addCompanyLogoToPDF, getCompanyForPDF } from '../utils/pdf-logo-helper.js';
 
 export interface JournalEntryPDFData {
   entry: {
